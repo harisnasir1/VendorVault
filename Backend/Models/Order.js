@@ -23,6 +23,7 @@ const OrderSchema = new mongoose.Schema(
   },
   shopifycustomerid:{
     type:String,
+    default:null,
   },
   cusid:{
     type:mongoose.Schema.Types.ObjectId,
@@ -34,7 +35,12 @@ const OrderSchema = new mongoose.Schema(
   },
   condition:{
     type:String,
-  }   
+  },
+  stage: {
+    type: String,
+    enum: ["NewLead", "NeedToSource", "Offered", "WarmLead", "Won", "Lost"],
+    default: "NewLead",
+  },
   },
   { timestamps: true } 
 );

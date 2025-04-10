@@ -1,5 +1,5 @@
 const Order = require("../Models/Order");
-
+const Lead =require("../Models/Leads")
 
 exports.createOrder = async (req, res) => {
   try {
@@ -14,6 +14,12 @@ exports.createOrder = async (req, res) => {
         size:newOrder.size,
         condition:newOrder.Condition,   
      })
+
+     if(or)
+     {
+
+     }
+     
      //add here for the customers comming form the mongodb
 
    return  res.status(201).json({message:or});
