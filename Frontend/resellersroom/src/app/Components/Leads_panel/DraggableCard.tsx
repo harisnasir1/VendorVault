@@ -1,15 +1,22 @@
+import React from 'react';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 
-import React from 'react'
-import { useDraggable } from '@dnd-kit/core';
-const DraggableCard = ({ task }: { task: any }) => {
-  const { attributes, listeners, setNodeRef, transform } = useDraggable({
-    id: String(task.id),
+const DraggableCard = ({ task,column }: { task: any, column:object }) => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+  } = useSortable({
+    id: String(task.id), // Important: should be a string
+    
   });
 
   const style = {
-    transform: transform
-      ? `translate3d(${transform.x}px, ${transform.y}px, 0)`
-      : undefined,
+    transform: CSS.Transform.toString(transform),
+    transition,
   };
 
   return (
@@ -24,4 +31,5 @@ const DraggableCard = ({ task }: { task: any }) => {
     </div>
   );
 };
-export default DraggableCard
+
+export default DraggableCard;

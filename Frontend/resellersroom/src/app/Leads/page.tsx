@@ -47,66 +47,74 @@ const DragStart = (event: any) => {
   
   const DragEnd = (event: any) => {
     const { active, over } = event;
+    if (!over) return setActiveCard(null);
   
-    if (!over || !draggedFromColumn) {
-      setActiveCard(null);
-      setDraggedFromColumn(null);
-      return;
-    }
+    const activeId = parseInt(active.id); 
+    const overId = over.id;
   
-    const taskId = parseInt(active.id);
-    const destinationColId = over.id;
+    const sourceColId = findColumnByTaskId(state, activeId);
   
-    // If dropped in the same column
-    if (draggedFromColumn === destinationColId) {
-      console.log("comming in same" , destinationColId, "  == ", draggedFromColumn)
-      const column = state.columns[destinationColId];
-      console.log(column)
-      const oldIndex = column.taskIds.indexOf(taskId);
-      console.log(oldIndex)
-      const newIndex = over.data?.current?.sortable?.index;
-      console.log(over)
-      if (oldIndex === newIndex || newIndex == null) {
-        // No reordering needed
+    // CASE 1: over.id is a column → dropped into empty space in column
+    const isOverAColumn = state.columns.hasOwnProperty(overId);
+    const destinationColId = isOverAColumn
+      ? overId
+      : findColumnByTaskId(state, parseInt(overId));
+  
+    
+    if (!destinationColId) return setActiveCard(null);
+  
+    const sourceCol = state.columns[sourceColId];
+    const destinationCol = state.columns[destinationColId];
+  
+    if (sourceColId === destinationColId) {
+      // Reordering in the same column
+      const oldIndex = sourceCol.taskIds.indexOf(activeId);
+  
+      const newIndex = isOverAColumn
+        ? sourceCol.taskIds.length
+        : sourceCol.taskIds.indexOf(parseInt(overId));
+  
+      if (oldIndex === newIndex) {
         setActiveCard(null);
-        setDraggedFromColumn(null);
         return;
       }
   
-      const newTaskIds = [...column.taskIds];
-      newTaskIds.splice(oldIndex, 1);
-      newTaskIds.splice(newIndex, 0, taskId);
+      const newTaskIds = [...sourceCol.taskIds];
+      newTaskIds.splice(oldIndex, 1); // remove active
+      newTaskIds.splice(newIndex, 0, activeId); // insert at new index
   
       const newState = {
         ...state,
         columns: {
           ...state.columns,
-          [destinationColId]: {
-            ...column,
+          [sourceColId]: {
+            ...sourceCol,
             taskIds: newTaskIds,
           },
         },
       };
-  
       setstate(newState);
       setActiveCard(null);
-      setDraggedFromColumn(null);
       return;
     }
-  else
-   { // Else: Moving to different column
-    console.log("comming in true ")
-    const sourceCol = state.columns[draggedFromColumn];
-    const destinationCol = state.columns[destinationColId];
   
-    const newSourceTaskIds = sourceCol.taskIds.filter((id: number) => id !== taskId);
-    const newDestinationTaskIds = [...destinationCol.taskIds, taskId];
+    // CASE 2: Moving to a different column
+    const newSourceTaskIds = sourceCol.taskIds.filter(id => id !== activeId);
+  
+    const newDestinationTaskIds = isOverAColumn
+      ? [...destinationCol.taskIds, activeId] // just push at end
+      : (() => {
+          const index = destinationCol.taskIds.indexOf(parseInt(overId));
+          const updated = [...destinationCol.taskIds];
+          updated.splice(index, 0, activeId);
+          return updated;
+        })();
   
     const newState = {
       ...state,
       columns: {
         ...state.columns,
-        [draggedFromColumn]: {
+        [sourceColId]: {
           ...sourceCol,
           taskIds: newSourceTaskIds,
         },
@@ -118,11 +126,9 @@ const DragStart = (event: any) => {
     };
   
     setstate(newState);
-    setActiveCard(null);}
-    setDraggedFromColumn(null);
+    setActiveCard(null);
   };
   
-
 
   return (
     <DndContext  onDragStart={DragStart} onDragEnd={DragEnd}> 
@@ -169,12 +175,12 @@ const initialData = {
     "NewLead": {
       id: "NewLead",
       title: "New Lead",
-      taskIds: [1, 2, 3, 4, 5, 6],
+      taskIds: [1, 2, 3, 4],
     },
     "NeedToSource": {
       id: "NeedToSource",
       title: "Need To Source",
-      taskIds: [],
+      taskIds: [5],
     },
     "Offered": {
       id: "Offered",
@@ -184,7 +190,7 @@ const initialData = {
     "WarmLead": {
       id: "WarmLead",
       title: "Warm Lead",
-      taskIds: [],
+      taskIds: [6],
     },
     "Won": {
       id: "Won",

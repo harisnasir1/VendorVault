@@ -36,7 +36,7 @@ const LeadCols = (props: Props) => {
         >
           <div className="flex flex-col items-center gap-4 p-1">
             {props.tasks.map((task: any, index) => (
-              <DraggableCard key={task.id} task={task} />
+              <DraggableCard key={task.id} task={task} column={props.column} />
             ))}
           </div>
         </SortableContext>
