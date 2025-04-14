@@ -1,14 +1,12 @@
 "use client";
-
 import { useState } from "react";
 import Sidebar from "../Main containers/Sidebar";
 import Navbar from "../Main containers/Navbar";
 import { SelectionProvider } from "../../Context/Leads/SelectionContext";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
-  const [sideOpen, setSideOpen] = useState(true);
-
   
+  const [sideOpen, setSideOpen] = useState(true);
   const handleMainClick = (msg:String) => {
 
     console.log(window.innerWidth)
@@ -33,7 +31,8 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
           <div
           className="flex flex-col gap-5 items-center  h-full"
           onClick={()=>handleMainClick("")} >
-          {children
+          {
+          children
           }
           </div>
         </SelectionProvider>

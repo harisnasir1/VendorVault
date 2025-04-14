@@ -40,7 +40,7 @@ const variants: Variants = {
 const Page: React.FC<pageProps> = (props) => {
   const [suggesteddata, setsuggesteddata] = useState<Suggest[]>([]);
   const { renderstep, direction } = useSelection();
-
+  console.log(props.sideopen)
   return (
     <div
       className={`relative w-full h-full flex justify-center items-center overflow-hidden ${props.ClassName}`}
