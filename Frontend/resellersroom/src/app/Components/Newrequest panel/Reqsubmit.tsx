@@ -1,8 +1,11 @@
+"use client"
 import React, { useState } from "react";
 import { useSelection } from "../../Context/Leads/SelectionContext";
 import axios from "axios";
 import { Custprop } from "../Small comps/Types";
-import { Sumana } from "next/font/google";
+
+import { redirect } from 'next/navigation'
+
 type Props = {};
 const Firsthalf = ({
   sugbox,
@@ -213,7 +216,7 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
   const [selectedcustomer,setselectedcustomer]=useState<Custprop|null>(null);
   const [complete, setcomplete] = useState<boolean>(false);
   const [sugbox, setsugbox] = useState<boolean>(false);
-
+  
   const transition = {
     duration: 0.8,
     delay: 0.5,
@@ -248,10 +251,13 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
    const result=await   axios.post("http://localhost:8000/api/orders/CreateOrders",{
         newOrder:newOrder
       })
+   
       console.log(result);
+      redirect('/Leads')
     }
     
   
+
   }
 
   return (
