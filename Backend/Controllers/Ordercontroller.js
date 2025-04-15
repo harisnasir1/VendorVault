@@ -94,6 +94,19 @@ exports.getAllOrders = async (req, res) => {
   }
 };
 
+exports.getnumberofleads=async(req,res)=>{
+try{
+    const n=await Order.countDocuments({stage:{ $ne: 'Lost' }});
+   
+  
+    res.status(201).json({data:n})
+}
+catch(err)
+{
+  res.json(500).json({message:"error in getting the numbers of leads"})
+}
+}
+
 exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findById(req.params.id).populate("items");

@@ -1,10 +1,19 @@
 "use client"
-import React from 'react'
+import React,{useEffect,useState} from 'react';
 import Link from "next/link";
 import { usePathname } from 'next/navigation';
+import axios from 'axios';
 const Slide = ({img, name, link, number}: {img: string, link: string, name: string, number: null|string}) => {
     const pathname = usePathname();
-    
+    const [nleads,setnleads]=useState<number>(0)
+    useEffect(()=>{
+       const fetchleadsnumber=async()=>{
+        const n=(await axios.get("http://localhost:8000/api/orders/getnumberofleads")).data;
+        console.log(n.data)
+        setnleads(n.data)
+       }
+       fetchleadsnumber()
+    },[])
     return(
                         <Link href={link} passHref legacyBehavior prefetch={true} >
 
@@ -13,14 +22,14 @@ const Slide = ({img, name, link, number}: {img: string, link: string, name: stri
                 <img  src={img} alt="" className="w-full h-full object-contain" />
             </div>
             <div className="flex-1 flex justify-start items-center">
-                {/* Fixed Link component */}
+               
                     <a className="w-full">{name}</a>
          
             </div>
             {number && (
                 <div className="flex items-center justify-center w-10 h-10">
                     <h3 className="h-[56%] w-full text-center flex items-center justify-center rounded-2xl text-white bg-[#374D71] px-2">
-                        {number}
+                        {nleads}
                     </h3>
                 </div>
             )}

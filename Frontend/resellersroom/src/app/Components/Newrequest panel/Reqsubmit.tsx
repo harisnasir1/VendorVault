@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import { useSelection } from "../../Context/Leads/SelectionContext";
 import axios from "axios";
 import { Custprop } from "../Small comps/Types";
-
 import { redirect } from 'next/navigation'
 
 type Props = {};
