@@ -66,7 +66,8 @@ exports.getAllOrders = async (req, res) => {
         createdAt:data.createdAt,
       }
 
-      const stage=orders.stage || "NewLead";
+    
+      const stage=data.stage || "NewLead";
       if(columns[stage])
       {
         columns[stage].taskIds.push(counter)
@@ -82,7 +83,7 @@ exports.getAllOrders = async (req, res) => {
     }
 
 
-    console.log(maporderdata)
+   
     
 
 
@@ -112,6 +113,28 @@ exports.updateOrder = async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 };
+
+exports.UpdateStages=async(req,res)=>{
+  const {taskid,newstage}=req.body;
+
+  try{
+
+  const re=await  Order.updateOne({_id:taskid._id},
+      {
+        $set:{
+          stage:newstage
+        }
+      }
+    )
+
+
+    res.status(201).json({message:"ok on updating kanban order stage"})
+
+  }
+  catch{
+    res.status(500).json({message:"error on updating kanban order stage"})
+  }
+}
 
 exports.deleteOrder = async (req, res) => {
   try {

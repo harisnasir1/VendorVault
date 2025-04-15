@@ -5,15 +5,16 @@ import {DndContext,DragOverlay } from '@dnd-kit/core';
 import DraggableCard from "../Components/Leads_panel/DraggableCard";
 import { col } from "motion/react-m";
 import axios from "axios";
+import { stat } from "fs";
 const LeadCols = dynamic(() => import("../Components/Leads_panel/LeadCols"), { ssr: false });
 
 type Props = {}
 
 
 export default function page({}: Props) {
-  const [state,setstate]=useState(initialData);
+  const [state,setstate]=useState();
   const [activeCard, setActiveCard] = useState(null);
-  
+  const [draggedFromColumn, setDraggedFromColumn] = useState<string | null>(null);
 
   useEffect(()=>{
     const fetchallorders=async()=>{
@@ -24,7 +25,7 @@ export default function page({}: Props) {
     fetchallorders()
   },[])
 
-  const [draggedFromColumn, setDraggedFromColumn] = useState<string | null>(null);
+ 
 
 const DragStart = (event: any) => {
   const { active } = event;
@@ -57,7 +58,7 @@ const DragStart = (event: any) => {
   const DragEnd = (event: any) => {
     const { active, over } = event;
     if (!over) return setActiveCard(null);
-  
+    const currenttask=findTaskById(state,active.id)
     const activeId = parseInt(active.id); 
     const overId = over.id;
   
@@ -118,7 +119,8 @@ const DragStart = (event: any) => {
           updated.splice(index, 0, activeId);
           return updated;
         })();
-        
+
+     console.log(state)
   
     const newState = {
       ...state,
@@ -133,10 +135,24 @@ const DragStart = (event: any) => {
           taskIds: newDestinationTaskIds,
         },
       },
+      tasks:{
+        ...state.tasks,
+        [active.id]:{
+          ...state.tasks[ Number(active.id)],
+          stage:destinationCol.title,
+        }
+      }
+
     };
+    console.log(newState)
+   
   
     setstate(newState);
     setActiveCard(null);
+    axios.post("http://localhost:8000/api/orders/UpdateStages",{
+      taskid:currenttask,
+      newstage:over.id
+    })
   };
   
 
@@ -154,6 +170,8 @@ const DragStart = (event: any) => {
     '>
   <div className="flex gap-1">
     {
+  state&&
+  state.columnOrder&&
       state.columnOrder.map((ColumnId, index) => {
         const column = state.columns[ColumnId];
         const tasks = column.taskIds.map((taskId,index) => state.tasks[taskId]);  // Fetch your MongoDB data here if needed

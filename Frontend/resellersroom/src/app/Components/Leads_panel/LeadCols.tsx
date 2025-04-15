@@ -1,7 +1,9 @@
 import React from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import DraggableCard from './DraggableCard';
+
+import dynamic from "next/dynamic";
+const DraggableCard = dynamic(() => import("./DraggableCard"), { ssr: false });
 
 type Props = {
   className: string;
@@ -31,7 +33,7 @@ const LeadCols = (props: Props) => {
         ref={setNodeRef}
       >
         <SortableContext
-          items={props.tasks.map((task) => task.id.toString())}
+          items={props.tasks&&props.tasks.map((task) => task.id.toString())}
           strategy={verticalListSortingStrategy}
         >
           <div className="flex flex-col items-center gap-4 p-1 transition-all duration-300 ease-in-out">
