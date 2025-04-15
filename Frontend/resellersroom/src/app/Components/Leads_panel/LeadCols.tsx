@@ -34,7 +34,7 @@ const LeadCols = (props: Props) => {
           items={props.tasks.map((task) => task.id.toString())}
           strategy={verticalListSortingStrategy}
         >
-          <div className="flex flex-col items-center gap-4 p-1">
+          <div className="flex flex-col items-center gap-4 p-1 transition-all duration-300 ease-in-out">
             {props.tasks.map((task: any, index) => (
               <DraggableCard key={task.id} task={task} column={props.column} />
             ))}

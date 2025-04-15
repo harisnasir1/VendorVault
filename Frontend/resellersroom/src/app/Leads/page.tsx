@@ -13,7 +13,7 @@ type Props = {}
 export default function page({}: Props) {
   const [state,setstate]=useState(initialData);
   const [activeCard, setActiveCard] = useState(null);
-
+  
 
   useEffect(()=>{
     const fetchallorders=async()=>{
@@ -118,6 +118,7 @@ const DragStart = (event: any) => {
           updated.splice(index, 0, activeId);
           return updated;
         })();
+        
   
     const newState = {
       ...state,
