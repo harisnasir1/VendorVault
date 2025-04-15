@@ -75,6 +75,7 @@ const DragStart = (event: any) => {
   
   const DragEnd = (event: any) => {
     const { active, over } = event;
+   
     if (!over) return setActiveCard(null);
     const currenttask=findTaskById(state,active.id)
     const activeId = parseInt(active.id); 
@@ -94,6 +95,7 @@ const DragStart = (event: any) => {
     const sourceCol = state.columns[sourceColId];
     const destinationCol = state.columns[destinationColId];
   
+    console.log(destinationCol)
     if (sourceColId === destinationColId) {
       // Reordering in the same column
       const oldIndex = sourceCol.taskIds.indexOf(activeId);
@@ -138,7 +140,7 @@ const DragStart = (event: any) => {
           return updated;
         })();
 
-     console.log(state)
+     
   
     const newState = {
       ...state,
@@ -162,15 +164,15 @@ const DragStart = (event: any) => {
       }
 
     };
-    console.log(newState)
+ 
    
   
     setstate(newState);
     setActiveCard(null);
-    axios.post("http://localhost:8000/api/orders/UpdateStages",{
-      taskid:currenttask,
-      newstage:over.id
-    })
+     axios.post("http://localhost:8000/api/orders/UpdateStages",{
+       taskid:currenttask,
+       newstage:destinationCol.id
+     })
   };
   
   const Manualcolchange=(newStage: string, oldstage:String, taskid:string,task_id:object)=>{
