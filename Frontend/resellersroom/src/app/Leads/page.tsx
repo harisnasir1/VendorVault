@@ -11,11 +11,29 @@ const LeadCols = dynamic(() => import("../Components/Leads_panel/LeadCols"), { s
 type Props = {}
 
 
+
+function useIsSmallScreen() {
+  const [isSmallScreen, setIsSmallScreen] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsSmallScreen(window.innerWidth < 1024);
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  return isSmallScreen;
+}
+
+
 export default function page({}: Props) {
   const [state,setstate]=useState();
   const [activeCard, setActiveCard] = useState(null);
   const [draggedFromColumn, setDraggedFromColumn] = useState<string | null>(null);
-
+  const [smcolumn,setsmcolumn]=useState<string>("NewLead");
   useEffect(()=>{
     const fetchallorders=async()=>{
       const mongodata=(await axios.get("http://localhost:8000/api/orders/getAllOrders")).data;
@@ -25,7 +43,7 @@ export default function page({}: Props) {
     fetchallorders()
   },[])
 
- 
+ const isSmallScreen=useIsSmallScreen();
 
 const DragStart = (event: any) => {
   const { active } = event;
@@ -155,37 +173,125 @@ const DragStart = (event: any) => {
     })
   };
   
+  const Manualcolchange=(newStage: string, oldstage:String, taskid:string,task_id:object)=>{
+    const sourceCol=state.columns[oldstage]
+    const newSourceTaskIds = sourceCol.taskIds.filter(id => id !== taskid);
+   
+       const destinationCol = state.columns[newStage];
+
+       const isOverAColumn = state.columns.hasOwnProperty(newStage);
+
+       const newDestinationTaskIds = isOverAColumn
+       ? [...destinationCol.taskIds, taskid] // just push at end
+       : (() => {
+           const index = destinationCol.taskIds.indexOf(parseInt(newStage));
+           const updated = [...destinationCol.taskIds];
+           updated.splice(index, 0, taskid);
+           return updated;
+         })();
+
+       const n = {
+        ...state,
+        columns: {
+          ...state.columns,
+          [oldstage]: {
+            ...sourceCol,
+            taskIds: newSourceTaskIds,
+          },
+          [newStage]: {
+            ...destinationCol,
+            taskIds: newDestinationTaskIds,
+          },
+        },
+        tasks:{
+          ...state.tasks,
+          [taskid]:{
+            ...state.tasks[ Number(taskid)],
+            stage:destinationCol.title,
+          }
+        }
+  
+      };
+      setstate(n)
+      setActiveCard(null);
+      axios.post("http://localhost:8000/api/orders/UpdateStages",{
+        taskid:task_id,
+        newstage:newStage
+      })
+
+
+
+
+
+  }
 
   return (
     <DndContext  onDragStart={DragStart} onDragEnd={DragEnd}> 
-
-
-
-    <div className='lg:w-[80vw] md:w-[60vw] w-full px-0.5 h-[100vh]  flex gap-2 justify-start items-center overflow-x-auto
+          { !isSmallScreen ?   <div className='lg:w-[80vw] md:w-[60vw] lg:visible hidden w-full px-0.5 h-[100vh]  lg:flex gap-2 justify-start items-center overflow-x-auto
        [&::-webkit-scrollbar]:w-1
     [&::-webkit-scrollbar-track]:bg-gray-100
     [&::-webkit-scrollbar-thumb]:bg-gray-300
     dark:[&::-webkit-scrollbar-track]:bg-neutral-700
-    dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500
-    '>
-  <div className="flex gap-1">
-    {
-  state&&
-  state.columnOrder&&
-      state.columnOrder.map((ColumnId, index) => {
-        const column = state.columns[ColumnId];
-        const tasks = column.taskIds.map((taskId,index) => state.tasks[taskId]);  // Fetch your MongoDB data here if needed
-        return (
-          <LeadCols key={index} className="" Colname={column.title} column={column} tasks={tasks} />
-        );
-      })
-    }
-  </div>
-</div>
-<DragOverlay>
+    dark:[&::-webkit-scrollbar-thumb]:bg-neutral-500 '>
+             <div className="flex gap-1">
+               {
+             state&&
+             state.columnOrder&&
+                 state.columnOrder.map((ColumnId, index) => {
+                   const column = state.columns[ColumnId];
+                   const tasks = column.taskIds.map((taskId,index) => state.tasks[taskId]);  // Fetch your MongoDB data here if needed
+                   return (
+                     <LeadCols key={index} className="" Colname={column.title} column={column} tasks={tasks}  disableDrag={isSmallScreen}   />
+                   );
+                 })
+               }
+             </div>
+               </div>
+            :
+               <div className=" lg:hidden visible w-full h-full flex-col  flex items-center">
+                
+                <div className=" w-full  h-[5vh] flex justify-center item-center ">
+                  
+                                  <select
+                            id="condition"
+                            value={smcolumn}
+                            onChange={(e)=>{
+                              setsmcolumn(e.target.value)
+                            }}
+                            className="bg-gray-50 border border-black text-gray-900 text-sm rounded-lg  p-2.5 ml-1.5">
+                            <option value="NewLead">NewLead</option>
+                            <option value="NeedToSource">Need To Source</option>
+                            <option value="Offered">Offered</option>
+                            <option value="WarmLead">WarmLead</option>
+                            <option value="Won">Won</option>
+                            <option value="Lost">Lost</option>
+                           </select>
+
+                </div>
+
+               {
+             state&&
+             state.columnOrder&&
+                 state.columnOrder.map((ColumnId, index) => {
+                   const column = state.columns[ColumnId];
+                   const tasks = column.taskIds.map((taskId,index) => state.tasks[taskId]);
+                   if(smcolumn==ColumnId)
+                    {
+                      return (
+                        <LeadCols key={index} className="" Colname={column.title} column={column} tasks={tasks}  disableDrag={isSmallScreen} Manualcolchange={Manualcolchange}  />
+                      );
+                    }  // Fetch your MongoDB data here if needed
+                   
+                   
+                 })
+               }
+               </div>
+}
+
+                <DragOverlay>
         {activeCard ? <DraggableCard task={activeCard} /> : null}
-      </DragOverlay>
-</DndContext>
+                </DragOverlay>
+    </DndContext>
 
   )
 }
