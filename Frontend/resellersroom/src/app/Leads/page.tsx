@@ -1,9 +1,10 @@
 "use client"
 import dynamic from "next/dynamic";
-import React,{act, Children, ReactNode, useState} from 'react'
+import React,{act, Children, ReactNode, useState,useEffect} from 'react'
 import {DndContext,DragOverlay } from '@dnd-kit/core';
 import DraggableCard from "../Components/Leads_panel/DraggableCard";
 import { col } from "motion/react-m";
+import axios from "axios";
 const LeadCols = dynamic(() => import("../Components/Leads_panel/LeadCols"), { ssr: false });
 
 type Props = {}
@@ -14,6 +15,14 @@ export default function page({}: Props) {
   const [activeCard, setActiveCard] = useState(null);
 
 
+  useEffect(()=>{
+    const fetchallorders=async()=>{
+      const mongodata=(await axios.get("http://localhost:8000/api/orders/getAllOrders")).data;
+     console.log(mongodata)
+     setstate(mongodata)
+    }
+    fetchallorders()
+  },[])
 
   const [draggedFromColumn, setDraggedFromColumn] = useState<string | null>(null);
 
@@ -164,12 +173,12 @@ const DragStart = (event: any) => {
 
 const initialData = {
   tasks: {
-    1: { id: 1, content: "Configure Next.js application" },
-    2: { id: 2, content: "Configure Next.js and tailwind " },
-    3: { id: 3, content: "Create sidebar navigation menu" },
-    4: { id: 4, content: "Create page footer" },
-    5: { id: 5, content: "Create page navigation menu" },
-    6: { id: 6, content: "Create page layout" },
+    "1": { id: 1, content: "Configure Next.js application" },
+    "2": { id: 2, content: "Configure Next.js and tailwind " },
+    "3": { id: 3, content: "Create sidebar navigation menu" },
+    "4": { id: 4, content: "Create page footer" },
+    "5": { id: 5, content: "Create page navigation menu" },
+    "6": { id: 6, content: "Create page layout" },
   },
   columns: {
     "NewLead": {

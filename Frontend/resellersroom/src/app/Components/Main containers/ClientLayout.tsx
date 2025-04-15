@@ -5,7 +5,7 @@ import Navbar from "../Main containers/Navbar";
 import { SelectionProvider } from "../../Context/Leads/SelectionContext";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
-  
+
   const [sideOpen, setSideOpen] = useState(true);
   const handleMainClick = (msg:String) => {
 

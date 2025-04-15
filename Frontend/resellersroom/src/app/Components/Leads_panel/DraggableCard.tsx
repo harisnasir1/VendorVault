@@ -25,9 +25,9 @@ const DraggableCard = ({ task,column }: { task: any, column:object }) => {
       style={style}
       {...listeners}
       {...attributes}
-      className="w-[80%] h-[150px] text-black bg-[#D9D9D9] rounded-xl cursor-pointer"
+      className="w-[80%] h-[150px] text-black bg-[#D9D9D9] rounded-xl cursor-pointer flex "
     >
-      {task.content}
+      
     </div>
   );
 };

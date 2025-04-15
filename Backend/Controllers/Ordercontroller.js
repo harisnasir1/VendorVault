@@ -29,8 +29,65 @@ exports.createOrder = async (req, res) => {
 
 exports.getAllOrders = async (req, res) => {
   try {
-    const orders = await Order.find().populate("items");
-    res.status(200).json(orders);
+    const orders = await Order.find().populate("items").populate("stockxitem");
+    const columnOrder = [
+      "NewLead",
+      "NeedToSource",
+      "Offered",
+      "WarmLead",
+      "Won",
+      "Lost",
+    ];
+    const tasks={};
+    const columns={}
+    let tcounter=1;
+ 
+    columnOrder.forEach(col => {
+      columns[col]={
+        id:col,
+        title:col,
+        taskIds:[]
+      }
+    });
+
+
+    orders.forEach((data)=>{
+      const counter=tcounter++;
+      tasks[counter]={
+        id:counter,
+        _id:data._id,
+        Name:data.Name,
+        stockxitem:data.stockxitem,
+        shopifycustomerid:data.shopifycustomerid,
+        cusid:data.cusid,
+        size:data.size,
+        condition:data.condition,
+        stage:data.stage,
+        createdAt:data.createdAt,
+      }
+
+      const stage=orders.stage || "NewLead";
+      if(columns[stage])
+      {
+        columns[stage].taskIds.push(counter)
+      }
+
+    })
+
+ 
+    const maporderdata={
+      tasks,
+      columns,
+      columnOrder
+    }
+
+
+    console.log(maporderdata)
+    
+
+
+
+    res.status(200).json(maporderdata);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
