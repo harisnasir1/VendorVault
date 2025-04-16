@@ -44,7 +44,7 @@ const createCustomer = async (req, res) => {
           session,
           query,
         });
-        console.log(newCustomer)
+        //console.log(newCustomer)
         if(customerData.customers.length>0 && customerData.customers[0].email===newCustomer.email){
       
          return res.status(201).json({alert:`Exits in the shopify search from this = ${customerData.email}`,

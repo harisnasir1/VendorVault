@@ -98,7 +98,7 @@ exports.getAllOrders = async (req, res) => {
 
 exports.getnumberofleads=async(req,res)=>{
 try{
-    const n=await Order.countDocuments({stage:{ $ne: 'Lost' }});
+    const n=await Order.countDocuments({stage:{ $nin: ['Lost' , 'Won']  }});
    
   
     res.status(201).json({data:n})
