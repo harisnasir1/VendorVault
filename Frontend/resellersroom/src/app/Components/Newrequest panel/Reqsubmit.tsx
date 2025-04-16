@@ -218,7 +218,7 @@ const Secondhalf = ({
   );
 };
 export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
-  const { selectedItems } = useSelection();
+  const { selectedItems,Toggleleadsrenderstep } = useSelection();
   const [Selectcondition, setSelectcondition] = useState<string>("");
   const [size, setsize] = useState("");
   const [selectedcustomer,setselectedcustomer]=useState<Custprop|null>(null);
@@ -262,7 +262,7 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
         clientFrom:customer.customerfrom?customer.customerfrom:null,
         size,
         Condition:Selectcondition,
-        userid
+        userid,
       }
    const result=await   axios.post("http://localhost:8000/api/orders/CreateOrders",{
         newOrder:newOrder
@@ -270,6 +270,7 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
    
       console.log(result);
       redirect('/Leads')
+      
     }
     
   

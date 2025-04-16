@@ -6,6 +6,7 @@ import DraggableCard from "../Components/Leads_panel/DraggableCard";
 import { col } from "motion/react-m";
 import axios from "axios";
 import { stat } from "fs";
+import { useSelection } from "../Context/Leads/SelectionContext";
 const LeadCols = dynamic(() => import("../Components/Leads_panel/LeadCols"), { ssr: false });
 
 type Props = {}
@@ -30,18 +31,30 @@ function useIsSmallScreen() {
 
 
 export default function page({}: Props) {
+    const { selectedItems,Toggleleadsrenderstep } = useSelection();
   const [state,setstate]=useState();
   const [activeCard, setActiveCard] = useState(null);
   const [draggedFromColumn, setDraggedFromColumn] = useState<string | null>(null);
   const [smcolumn,setsmcolumn]=useState<string>("NewLead");
+  
+  const [userid,setuserid]=useState<string|null>('')
   useEffect(()=>{
+    Toggleleadsrenderstep(0)
+    if (typeof window !== 'undefined'){
+      const id=localStorage.getItem('tempcred');
+      setuserid(id);}
+    },[]);
+      
+
+  useEffect(()=>{
+    
     const fetchallorders=async()=>{
-      const mongodata=(await axios.get("http://localhost:8000/api/orders/getAllOrders")).data;
+      const mongodata=(await axios.post("http://localhost:8000/api/orders/getAllOrders",{id:userid})).data;
      console.log(mongodata)
      setstate(mongodata)
     }
     fetchallorders()
-  },[])
+  },[userid])
 
  const isSmallScreen=useIsSmallScreen();
 

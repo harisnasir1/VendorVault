@@ -4,7 +4,7 @@ const Order = require("../Models/Order");
 exports.createOrder = async (req, res) => {
   try {
     const {newOrder} = req.body;
-    //console(newOrder);
+  
  
       const or=await Order.create({
         Name: newOrder.Name,
@@ -12,8 +12,8 @@ exports.createOrder = async (req, res) => {
         shopifycustomerid:newOrder.clientFrom=='shopify'?newOrder.customerid:null,
         cusid:newOrder.clientFrom=='mongodb'?newOrder.customerid:null,
         size:newOrder.size,
-        condition:newOrder.Condition,   
-        userid:newOrder.userid
+        condition:newOrder.Condition,
+        userid:newOrder.userid   
      })
 
      
@@ -30,6 +30,7 @@ exports.createOrder = async (req, res) => {
 
 exports.getAllOrders = async (req, res) => {
   try {
+    const {id}=req.body;
     const orders = await Order.find().populate("items").populate("stockxitem");
     const columnOrder = [
       "NewLead",
