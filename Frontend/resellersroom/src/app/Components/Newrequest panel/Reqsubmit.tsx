@@ -1,5 +1,5 @@
 "use client"
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelection } from "../../Context/Leads/SelectionContext";
 import axios from "axios";
 import { Custprop } from "../Small comps/Types";
@@ -21,11 +21,20 @@ const Firsthalf = ({
   const [searchclient, setsearchclient] = useState<string>("");
   const [getcusdata, setgetcusdata] = useState<any>();
   const [getcusmongodata, setgetcusmongodata] = useState<any>();
+  const [userid,setuserid]=useState<string|null>('')
+  useEffect(()=>{
+    if (typeof window !== 'undefined'){
+      const id=localStorage.getItem('tempcred');
+      setuserid(id);
+      
+     }
+  },[])
   const SearchCustomer = async () => {
     const serchresult = await axios.post(
       "http://localhost:8000/api/customers/getCustomersbyboth",
       {
         search: searchclient,
+        id:userid
       }
     );
     console.log(serchresult.data);
@@ -215,7 +224,14 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
   const [selectedcustomer,setselectedcustomer]=useState<Custprop|null>(null);
   const [complete, setcomplete] = useState<boolean>(false);
   const [sugbox, setsugbox] = useState<boolean>(false);
-  
+  const [userid,setuserid]=useState<string|null>('')
+  useEffect(()=>{
+    if (typeof window !== 'undefined'){
+      const id=localStorage.getItem('tempcred');
+      setuserid(id);
+      
+     }
+  },[])
   const transition = {
     duration: 0.8,
     delay: 0.5,
@@ -245,7 +261,8 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
         Stockxid:selectedItems._id,
         clientFrom:customer.customerfrom?customer.customerfrom:null,
         size,
-        Condition:Selectcondition
+        Condition:Selectcondition,
+        userid
       }
    const result=await   axios.post("http://localhost:8000/api/orders/CreateOrders",{
         newOrder:newOrder

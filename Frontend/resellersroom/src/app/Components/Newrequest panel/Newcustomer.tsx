@@ -1,5 +1,5 @@
 "use client"
-import React,{useState} from 'react';
+import React,{useState,useEffect} from 'react';
 import { useSelection } from '@/app/Context/Leads/SelectionContext';
 import axios from 'axios';
 
@@ -9,14 +9,25 @@ type Props = {
 
 const Newcustomer = (props: Props) => {
   const { selectedItems,Toggleleadsrenderstep } = useSelection();
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
-  const [email, setEmail] = useState('');
-  const [address, setAddress] = useState('');
-  const [postcode, setPostcode] = useState('');
-  const [city,setcity]=useState('');
+  const [name, setName] = useState<string>('');
+  const [number, setNumber] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [address, setAddress] = useState<string>('');
+  const [postcode, setPostcode] = useState<string>('');
+  const [city,setcity]=useState<string>('');
+  const [userid,setuserid]=useState<string|null>('')
+  
+  useEffect(()=>{
+    if (typeof window !== 'undefined'){
+     const id=localStorage.getItem('tempcred');
+     setuserid(id);
+     console.log(localStorage.getItem('tempcred'))
+    }
+  },[])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log(userid)
 
     // Basic validation
     if (!name || !number || !email || !address || !postcode) {
@@ -31,6 +42,7 @@ const Newcustomer = (props: Props) => {
       address,
       city,
       postcode,
+      userid,
     };
   const newc=await axios.post(  "http://localhost:8000/api/customers/createCustomer",
       {

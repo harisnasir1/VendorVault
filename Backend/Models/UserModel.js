@@ -18,7 +18,23 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-    
+    },
+    SHOPIFY_API_KEY:{
+      type:String,
+      default:null,
+    },
+    SHOPIFY_API_SECRET:{
+      type:String,
+      default:null,
+    },
+    SHOPIFY_ACCESS_TOKEN:{
+      type:String,
+      default:null,
+    },
+    SHOPIFY_STORE_DOMAIN:
+    {
+      type:String,
+      default:null,
     },
   },
   { timestamps: true } // Adds createdAt & updatedAt fields automatically

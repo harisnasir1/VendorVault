@@ -44,7 +44,7 @@ const createCustomer = async (req, res) => {
           session,
           query,
         });
-        //console.log(customerData)
+        console.log(newCustomer)
         if(customerData.customers.length>0 && customerData.customers[0].email===newCustomer.email){
       
          return res.status(201).json({alert:`Exits in the shopify search from this = ${customerData.email}`,
@@ -57,7 +57,8 @@ const createCustomer = async (req, res) => {
           Number:newCustomer.number,
           address:newCustomer.address,
           City:newCustomer.city,
-          Postcode:newCustomer.postcode
+          Postcode:newCustomer.postcode,
+          userid:newCustomer.userid,
         }
         );
     
@@ -93,8 +94,8 @@ const getCustomerById = async (req, res) => {
 };
 
 const getCustomers_from_shopify_mongo = async (req, res) => {
-    const { search } = req.body;
-  
+    const { search,id } = req.body;
+   
     let query = "";
     let mongodata=null;
     if (search.includes("@")) {
@@ -105,7 +106,8 @@ const getCustomers_from_shopify_mongo = async (req, res) => {
       //console.log("Searching by email...");
     } else {
       mongodata= await  Customer.find({
-        Name:{ $regex: new RegExp(`^${search}$`, 'i') }
+        Name:{ $regex: new RegExp(`^${search}$`, 'i') },
+        userid:id
         })
         //console.log("get the sarah from the mongodb",mongodata)
       const nameParts = search.trim().split(/\s+/);
@@ -121,15 +123,11 @@ const getCustomers_from_shopify_mongo = async (req, res) => {
       }
     }
 
-
-  
     try {
       const customerData = await shopify.rest.Customer.search({
         session,
         query,
-      });
-
-     
+      });     
     const d =  customerData.customers.map((customer) => ({
         _id:customer.id,
         email:customer.email,
@@ -157,8 +155,7 @@ const getCustomers_from_shopify_mongo = async (req, res) => {
           zip: customer?.Postcode || "",
         }
       }));
-        
-          
+      
       res.status(200).json({ d,dm });
     } catch (error) {
       res.status(500).json({ message: "Shopify customer search failed", error });

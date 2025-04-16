@@ -41,6 +41,11 @@ const OrderSchema = new mongoose.Schema(
     enum: ["NewLead", "NeedToSource", "Offered", "WarmLead", "Won", "Lost"],
     default: "NewLead",
   },
+  userid:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"User",
+    required:true,
+  }
   },
   { timestamps: true } 
 );

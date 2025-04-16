@@ -13,6 +13,7 @@ exports.createOrder = async (req, res) => {
         cusid:newOrder.clientFrom=='mongodb'?newOrder.customerid:null,
         size:newOrder.size,
         condition:newOrder.Condition,   
+        userid:newOrder.userid
      })
 
      

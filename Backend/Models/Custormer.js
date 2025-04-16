@@ -26,6 +26,11 @@ const CustomerSchema = new mongoose.Schema(
     Postcode:{
         type:String,
         required:true,
+    },
+    userid:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:"User",
+      required:true,
     }
   },
   { timestamps: true } // Adds createdAt & updatedAt fields automatically
