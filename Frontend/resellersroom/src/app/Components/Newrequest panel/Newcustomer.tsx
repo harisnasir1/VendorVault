@@ -44,7 +44,7 @@ const Newcustomer = (props: Props) => {
       postcode,
       userid,
     };
-  const newc=await axios.post(  "http://localhost:8000/api/customers/createCustomer",
+  const newc=await axios.post("http://localhost:8000/api/customers/createCustomer",
       {
         newCustomer:newCustomer
       }

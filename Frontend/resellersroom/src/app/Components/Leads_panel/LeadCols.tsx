@@ -11,7 +11,7 @@ type Props = {
   column: any;
   tasks: any[];
   disableDrag?: boolean; 
-  Manualcolchange:(newStage: string ,oldstage:String, taskid:string, task_id:object)=>void;
+  Manualcolchange:(newStage: string ,oldstage:string, taskid:number, task_id:object)=>void;
 };
 
 const LeadCols = (props: Props) => {
@@ -40,7 +40,7 @@ const LeadCols = (props: Props) => {
         >
           <div className="flex flex-col items-center gap-5 p-1 transition-all duration-300 ease-in-out">
             {props.tasks.map((task: any, index) => (
-              <DraggableCard key={task.id} task={task} column={props.column} disableDrag={props.disableDrag} Manualcolchange={props.Manualcolchange} />
+       <DraggableCard key={task.id} task={task} column={props.column} disableDrag={props.disableDrag} Manualcolchange={props.Manualcolchange}/>
             ))}
           </div>
         </SortableContext>
