@@ -1,6 +1,6 @@
 "use client";
 import dynamic from "next/dynamic";
-import React, { act, Children, ReactNode, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   DndContext,
   DragOverlay,
@@ -14,6 +14,7 @@ import axios from "axios";
 import { useSelector, useDispatch } from 'react-redux';
 import { Reseller, RootState } from "@/lib/Resellerstore";
 import {addItem,Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
+
 const LeadCols = dynamic(() => import("../Components/Leads_panel/LeadCols"), {
   ssr: false,
 });
@@ -68,16 +69,12 @@ export default function page({}: Props) {
   const dispatch=useDispatch()
   const [state, setstate] = useState<statetype>();
   const [activeCard, setActiveCard] = useState(null);
-  const [draggedFromColumn, setDraggedFromColumn] = useState<string | null>(
-    null
-  );
   const [smcolumn, setsmcolumn] = useState<string>("NewLead");
-
   const [userid, setuserid] = useState<string | null>("");
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
-        distance: 10, // ⬅️ drag only starts if mouse moves 10px
+        distance: 10, 
       },
       
     }),
@@ -118,7 +115,7 @@ export default function page({}: Props) {
     const task = findTaskById(state, taskId);
     
     const colId = findColumnByTaskId(state, taskId);
-    setDraggedFromColumn(colId);
+   
     setActiveCard(task);}
   };
 
@@ -128,7 +125,7 @@ export default function page({}: Props) {
 
   const findColumnByTaskId = (state: statetype, taskId: number): string => {
     for (const colId of Object.keys(state.columns)) {
-      //    console.log(state.columns[colId].taskIds)
+     
       if (state.columns[colId].taskIds.includes(taskId)) {
         return colId;
       }

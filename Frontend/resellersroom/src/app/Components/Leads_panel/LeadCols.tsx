@@ -38,9 +38,9 @@ const LeadCols = (props: Props) => {
           items={props.tasks&&props.tasks.map((task) => task.id.toString())}
           strategy={verticalListSortingStrategy}
         >
-          <div className="flex flex-col items-center gap-5 p-1 transition-all duration-300 ease-in-out">
+          <div className="flex  flex-col items-center gap-5  transition-all duration-300 ease-in-out">
             {props.tasks.map((task: any, index) => (
-       <DraggableCard key={task.id} task={task} column={props.column} disableDrag={props.disableDrag} Manualcolchange={props.Manualcolchange}/>
+                <DraggableCard key={task.id} task={task} column={props.column} disableDrag={props.disableDrag} Manualcolchange={props.Manualcolchange}/>
             ))}
           </div>
         </SortableContext>

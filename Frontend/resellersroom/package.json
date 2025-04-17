@@ -13,6 +13,7 @@
     "@dnd-kit/sortable": "^10.0.0",
     "@next/env": "^15.3.0",
     "@radix-ui/react-dialog": "^1.1.7",
+    "@radix-ui/react-slot": "^1.2.0",
     "@reduxjs/toolkit": "^2.6.1",
     "animate-presence": "^0.2.1",
     "axios": "^1.8.4",
