@@ -6,6 +6,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogPortal,
+  DialogOverlay
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Check } from "lucide-react";
@@ -58,18 +60,15 @@ export function TaskPanel({
 
   return (
     <>
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent
-          className="w-[600px] h-[90vh] overflow-y-auto animate-in fade-in zoom-in-90"
-          ref={dialogRef}
-        >
-          <DialogHeader>
-            <DialogTitle className="text-lg sm:text-xl  text-center">
-              {task?.Name}
-            </DialogTitle>
-          </DialogHeader>
+<Dialog open={open} onOpenChange={setOpen}>
+  <DialogPortal>
+    <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
+    <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-90 z-50">
+      <DialogHeader>
+        <DialogTitle className=" w-full text-center text-2xl">{task?.Name}</DialogTitle>
+      </DialogHeader>
 
-          <div className="flex justify-center   ">
+      <div className="flex justify-center   ">
             <img
               src={task?.stockxitem[0].image}
               alt="Product"
@@ -115,11 +114,9 @@ export function TaskPanel({
               />
             </div>
  
-
-        
-    
-        </DialogContent>
-      </Dialog>
+    </DialogContent>
+  </DialogPortal>
+</Dialog>
 
       {/* Nested Dialogs (Label Selector & Create Label) */}
       <Dialog open={labelDialogOpen} onOpenChange={setLabelDialogOpen}>
