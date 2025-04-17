@@ -1,10 +1,11 @@
 "use client"
 import React, { useEffect, useState } from "react";
-import { useSelection } from "../../Context/Leads/SelectionContext";
 import axios from "axios";
 import { Custprop } from "../Small comps/Types";
 import { redirect } from 'next/navigation'
-
+import { useSelector, useDispatch } from 'react-redux';
+import { Reseller, RootState } from "@/lib/Resellerstore";
+import {addItem,Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
 type Props = {};
 const Firsthalf = ({
   sugbox,
@@ -17,11 +18,12 @@ const Firsthalf = ({
   selectedcustomer: Custprop|null,
   setselectedcustomer: React.Dispatch<React.SetStateAction<Custprop|null>>; 
 }) => {
-  const { selectedItems } = useSelection();
+ 
+  const selectedItems = useSelector((state:RootState)=>state.NewReq.selectedItems)
   const [searchclient, setsearchclient] = useState<string>("");
   const [getcusdata, setgetcusdata] = useState<any>();
   const [getcusmongodata, setgetcusmongodata] = useState<any>();
-  const [userid,setuserid]=useState<string|null>('')
+  const [userid,setuserid]=useState<string|null>('');
   useEffect(()=>{
     if (typeof window !== 'undefined'){
       const id=localStorage.getItem('tempcred');
@@ -162,7 +164,8 @@ const Secondhalf = ({
   setselectedcustomer: React.Dispatch<React.SetStateAction<Custprop|null>>; 
   Submit_Request:(size:string,Selectcondition:string,customer:Custprop|null)=>void;
 }) => {
-  const { addItem, selectedItems, Toggleleadsrenderstep } = useSelection();
+  const dispatch= useDispatch()
+  //const { addItem, selectedItems, Toggleleadsrenderstep } = useSelection();
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectcondition(event.target.value);
   };
@@ -172,7 +175,7 @@ const Secondhalf = ({
         <span
           className=" cursor-pointer"
           onClick={() => {
-            Toggleleadsrenderstep(3);
+            dispatch(Toggleleadsrenderstep(3));
           }}
         >
           No result? Add new client
@@ -218,7 +221,7 @@ const Secondhalf = ({
   );
 };
 export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
-  const { selectedItems,Toggleleadsrenderstep } = useSelection();
+  const selectedItems= useSelector((state:RootState)=>state.NewReq.selectedItems)
   const [Selectcondition, setSelectcondition] = useState<string>("");
   const [size, setsize] = useState("");
   const [selectedcustomer,setselectedcustomer]=useState<Custprop|null>(null);
@@ -303,4 +306,4 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
       />
     </div>
   );
-}
+};

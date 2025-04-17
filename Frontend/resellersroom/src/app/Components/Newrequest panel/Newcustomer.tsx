@@ -1,14 +1,17 @@
 "use client"
 import React,{useState,useEffect} from 'react';
-import { useSelection } from '@/app/Context/Leads/SelectionContext';
 import axios from 'axios';
-
+import { useSelector, useDispatch } from 'react-redux';
+import { Reseller, RootState } from "@/lib/Resellerstore";
+import {addItem,Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
 type Props = {
   sideopen: boolean;
 };
 
 const Newcustomer = (props: Props) => {
-  const { selectedItems,Toggleleadsrenderstep } = useSelection();
+  const dispatch =useDispatch();
+  const selectedItems=useSelector((state:RootState)=>state.NewReq.selectedItems)
+ 
   const [name, setName] = useState<string>('');
   const [number, setNumber] = useState<string>('');
   const [email, setEmail] = useState<string>('');
@@ -28,8 +31,7 @@ const Newcustomer = (props: Props) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     console.log(userid)
-
-    // Basic validation
+    
     if (!name || !number || !email || !address || !postcode) {
       alert('Please fill in all fields.');
       return;
@@ -61,7 +63,7 @@ const Newcustomer = (props: Props) => {
     setAddress('');
     setPostcode('');
     setcity('')
-    Toggleleadsrenderstep(2);
+    dispatch(Toggleleadsrenderstep(2));
   };
 
   return (

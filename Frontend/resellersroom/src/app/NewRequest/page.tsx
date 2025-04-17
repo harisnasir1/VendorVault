@@ -3,9 +3,12 @@ import React, { useState } from "react";
 import Requestpanle from '../Components/Newrequest panel/Requestpanle';
 import Newcustomer from "../Components/Newrequest panel/Newcustomer";
 import { Suggest } from "../Components/Small comps/Types";
-import { useSelection } from "../Context/Leads/SelectionContext";
+
 import Reqsubmit from "../Components/Newrequest panel/Reqsubmit";
 import { AnimatePresence, motion, Variants } from "framer-motion";
+import { useSelector, useDispatch } from 'react-redux';
+import { Reseller, RootState } from "@/lib/Resellerstore";
+import {addItem,Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
 
 type pageProps = {
   sideopen: boolean;
@@ -38,14 +41,17 @@ const variants: Variants = {
 };
 
 const Page: React.FC<pageProps> = (props) => {
+  const dispatch = useDispatch(); 
   const [suggesteddata, setsuggesteddata] = useState<Suggest[]>([]);
-  const { renderstep, direction } = useSelection();
-  console.log(props.sideopen)
+ // const { renderstep, direction } = useSelection();
+  const renderstep=useSelector((state:RootState)=>state.NewReq.renderstep)
+  const direction =useSelector((state:RootState)=>state.NewReq.direction)
+ 
+ 
   return (
     <div
-      className={`relative w-full h-full flex justify-center items-center overflow-hidden ${props.ClassName}`}
-    >
-      {/* Default static view */}
+      className={`relative w-full h-full flex justify-center items-center overflow-hidden ${props.ClassName}`} >
+     
       {renderstep === 0 && (
         <Requestpanle
           sideopen={props.sideopen}
@@ -54,7 +60,7 @@ const Page: React.FC<pageProps> = (props) => {
         />
       )}
 
-      {/* Step 2 stays visible even during transitions to 3 or 4 */}
+     
       {[2, 3, 4].includes(renderstep) && (
         <motion.div
           key="step2"
@@ -71,7 +77,7 @@ const Page: React.FC<pageProps> = (props) => {
         </motion.div>
       )}
 
-      {/* Step 3 and Step 4 animate on top */}
+    
       <AnimatePresence mode="wait" custom={{ direction }}>
         {renderstep === 3 && (
           <motion.div

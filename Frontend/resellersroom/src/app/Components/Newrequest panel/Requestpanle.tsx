@@ -19,7 +19,7 @@ function Requestpanle({sideopen,suggesteddata,setsuggesteddata}:
    const data= await axios.post("http://localhost:8000/api/Stockx/getstockstore",{
     search:msg
    })
-  console.log(data.data);
+ 
    setsuggesteddata(data.data.message)
   }
   

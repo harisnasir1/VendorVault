@@ -10,10 +10,10 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 import DraggableCard from "../Components/Leads_panel/DraggableCard";
-import { col } from "motion/react-m";
 import axios from "axios";
-import { stat } from "fs";
-import { useSelection } from "../Context/Leads/SelectionContext";
+import { useSelector, useDispatch } from 'react-redux';
+import { Reseller, RootState } from "@/lib/Resellerstore";
+import {addItem,Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
 const LeadCols = dynamic(() => import("../Components/Leads_panel/LeadCols"), {
   ssr: false,
 });
@@ -65,7 +65,7 @@ function useIsSmallScreen() {
 }
 
 export default function page({}: Props) {
-  const { selectedItems, Toggleleadsrenderstep } = useSelection();
+  const dispatch=useDispatch()
   const [state, setstate] = useState<statetype>();
   const [activeCard, setActiveCard] = useState(null);
   const [draggedFromColumn, setDraggedFromColumn] = useState<string | null>(
@@ -90,7 +90,7 @@ export default function page({}: Props) {
   );
   
   useEffect(() => {
-    Toggleleadsrenderstep(0);
+    dispatch(Toggleleadsrenderstep(0));
     if (typeof window !== "undefined") {
       const id = localStorage.getItem("tempcred");
       setuserid(id);

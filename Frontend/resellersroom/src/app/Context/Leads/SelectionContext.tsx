@@ -1,9 +1,8 @@
 "use client"
 import { createContext, useContext, useState,ReactNode } from 'react';
 import {Suggest} from "../../Components/Small comps/Types"
-// Define the item type (customize as needed)
 
-// Define the context type
+
 interface SelectionContextType {
   selectedItems: Suggest|null;
   addItem: (item: Suggest) => void;
@@ -11,9 +10,6 @@ interface SelectionContextType {
   renderstep:number,
   direction:number,
 }
-
-
-
 
 
 
@@ -50,7 +46,7 @@ export const SelectionProvider = ({ children }: SelectionProviderProps) => {
   );
 };
 
-// Custom hook for using the context
+
 export const useSelection = (): SelectionContextType => {
   const context = useContext(SelectionContext);
   if (!context) {
