@@ -31,7 +31,9 @@ exports.createOrder = async (req, res) => {
 exports.getAllOrders = async (req, res) => {
   try {
     const {id}=req.body;
-    const orders = await Order.find().populate("items").populate("stockxitem");
+  
+    const orders = await Order.find({userid:id}).populate("items").populate("stockxitem").populate("labels");
+   
     const columnOrder = [
       "NewLead",
       "NeedToSource",
@@ -66,6 +68,8 @@ exports.getAllOrders = async (req, res) => {
         condition:data.condition,
         stage:data.stage,
         createdAt:data.createdAt,
+        labels:data.labels,
+        Description:data.Description
       }
 
     
@@ -85,13 +89,9 @@ exports.getAllOrders = async (req, res) => {
     }
 
 
-   
-    
-
-
-
     res.status(200).json(maporderdata);
   } catch (error) {
+    console.error("Error fetching orders:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -160,3 +160,23 @@ exports.deleteOrder = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+//different
+exports.updatelabels=async (req,res)=>{
+  try{
+
+    const {newlabels,orderid}=req.body;
+ 
+    
+    const order=await  Order.updateOne({_id:orderid},{$set:{labels:newlabels}});
+    const n=await Order.find({_id:orderid}).populate("labels");
+      //console.log(order)
+     
+     res.status(201).json({data:n})
+  }
+  catch(err)
+  {
+    res.status(500).json({ message: err.message });
+
+  }
+}

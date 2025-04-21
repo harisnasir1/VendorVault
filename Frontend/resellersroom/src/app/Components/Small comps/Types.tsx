@@ -1,16 +1,29 @@
 import { hasCustomGetInitialProps } from "next/dist/build/utils"
 
-export type Suggest={
-  _id: string,
-  Stockxid: string,
-  sku: string,
-  name:string,
-  slug: string,
-  brand: string,
-  image:  string,
-  createdAt: string,
-  updatedAt: string,
+export type labeltype={
+  label:{name:string,
+  col:string,
+  },
+  _id:string,
 }
+export type Suggest = {
+  _id: string;
+  Stockxid: string;
+  stockxitem:[{
+    name:string,
+    image:string
+  }];
+  labels:labeltype
+  label:labeltype
+  sku: string;
+  Name: string;
+  slug: string;
+  brand: string;
+  image: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
  export type Custprop={
    
   _id:string,

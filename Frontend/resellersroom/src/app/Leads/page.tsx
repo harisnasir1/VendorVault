@@ -93,17 +93,19 @@ export default function page({}: Props) {
       setuserid(id);
     }
   }, []);
+  const fetchallorders = async () => {
+    if(userid!=""){
+    const mongodata = (
+      await axios.post("http://localhost:8000/api/orders/getAllOrders", {
+        id: userid,
+      })
+    ).data;
+    
+    setstate(mongodata);
+}    };
 
   useEffect(() => {
-    const fetchallorders = async () => {
-      const mongodata = (
-        await axios.post("http://localhost:8000/api/orders/getAllOrders", {
-          id: userid,
-        })
-      ).data;
-      console.log(mongodata);
-      setstate(mongodata);
-    };
+   
     fetchallorders();
   }, [userid]);
 
@@ -281,6 +283,8 @@ export default function page({}: Props) {
     });}
   };
 
+ 
+
   return (
     <DndContext onDragStart={DragStart} onDragEnd={DragEnd}  sensors={sensors}>
       {!isSmallScreen ? (
@@ -309,6 +313,7 @@ export default function page({}: Props) {
                     tasks={tasks}
                     disableDrag={isSmallScreen}
                     Manualcolchange={Manualcolchange}
+                    fetchallorders={fetchallorders}
                   />
                 );
               })}
@@ -351,6 +356,7 @@ export default function page({}: Props) {
                     tasks={tasks}
                     disableDrag={isSmallScreen}
                     Manualcolchange={Manualcolchange}
+                    fetchallorders={fetchallorders}
                   />
                 );
               } // Fetch your MongoDB data here if needed
@@ -359,7 +365,7 @@ export default function page({}: Props) {
       )}
 
       <DragOverlay>
-        {activeCard ? <DraggableCard task={activeCard} column={{}} disableDrag Manualcolchange={Manualcolchange} /> : null}
+        {activeCard ? <DraggableCard task={activeCard} column={{}} disableDrag Manualcolchange={Manualcolchange} fetchallorders={fetchallorders} /> : null}
       </DragOverlay>
     </DndContext>
   );

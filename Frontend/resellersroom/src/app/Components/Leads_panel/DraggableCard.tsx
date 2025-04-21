@@ -3,9 +3,16 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { TaskPanel } from './TaskPanel';
 import {Clock} from 'lucide-react'
+import {Suggest} from "../Small comps/Types"
+
+
+
+
+
+
 const columnOptions = ["NewLead", "NeedToSource", "Offered", "WarmLead", "Won", "Lost"];
 
-const DraggableCard = ({ task, column, disableDrag = false,Manualcolchange, }: { task: any; column: object; disableDrag?: boolean,Manualcolchange:(newStage: string, oldstage:string, taskid:number, task_id:object)=>void }) => {
+const DraggableCard = ({ task, column, disableDrag = false,Manualcolchange,fetchallorders }: { task: any; column: object; disableDrag?: boolean,Manualcolchange:(newStage: string, oldstage:string, taskid:number, task_id:object)=>void ,fetchallorders: () => void}) => {
   const {
     attributes,
     listeners,
@@ -26,7 +33,7 @@ const DraggableCard = ({ task, column, disableDrag = false,Manualcolchange, }: {
   const [selectedCol, setSelectedCol] = useState(task.stage);
   const [startpos,setstartpos]=useState<{x:number,y:number}|null>(null)
   const [showPanel, setShowPanel] = useState(false);
-  const [clickedTask, setClickedTask] = useState(null);
+  const [clickedTask, setClickedTask] = useState<Suggest |null>(null);
   const [creationdate,setcreationdate]=useState<string>("");
   useEffect(()=>{
     const createdAt = task.createdAt; // or from your MongoDB doc
@@ -57,7 +64,7 @@ const DraggableCard = ({ task, column, disableDrag = false,Manualcolchange, }: {
     }
 
   }
-  console.log(task)
+  //.log(task)
 
   return (
     <div
@@ -76,7 +83,7 @@ const DraggableCard = ({ task, column, disableDrag = false,Manualcolchange, }: {
           : 'bg-[#D9D9D9]'
       } rounded-xl cursor-pointer flex flex-col gap-0.5 transition-all duration-300 ease-in-out shadow-lg shadow-black  hover:border-amber-50 border `}
     >
-      {showPanel && <TaskPanel open={showPanel} setOpen={setShowPanel} task={clickedTask} />}
+      {showPanel && <TaskPanel open={showPanel} setOpen={setShowPanel} task={clickedTask} fetchallorders={fetchallorders} />}
       <div className="absolute top-2 right-2 sm:block md:hidden">
   <button
     onClick={(e) => {

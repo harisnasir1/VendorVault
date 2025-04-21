@@ -11,50 +11,95 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Plus, Check } from "lucide-react";
+import axios from "axios";
+import { Suggest,labeltype } from "../Small comps/Types";
 
-type Suggest = {
-  _id: string;
-  Stockxid: string;
-  sku: string;
-  name: string;
-  slug: string;
-  brand: string;
-  image: string;
-  createdAt: string;
-  updatedAt: string;
-};
 
-const availableLabels = [
-  { id: 1, name: "Urgent", color: "bg-red-500" },
-  { id: 2, name: "Follow-up", color: "bg-blue-500" },
-  { id: 3, name: "Info", color: "bg-green-500" },
-];
+
 
 export function TaskPanel({
   open,
   setOpen,
   task,
+  fetchallorders
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  task: Suggest;
+  task: Suggest|null;
+  fetchallorders: () => void
 }) {
   const [labelDialogOpen, setLabelDialogOpen] = useState(false);
   const [createLabelOpen, setCreateLabelOpen] = useState(false);
-  const [selectedLabels, setSelectedLabels] = useState<any[]>([]);
+  const [selectedLabels, setSelectedLabels] = useState<Suggest>(task?.labels);
   const [newLabel, setNewLabel] = useState("");
   const [selectedColor, setSelectedColor] = useState("bg-blue-500");
+  const [availableLabels,setavailableLabels]=useState<any>([])
   const dialogRef = useRef<HTMLDivElement>(null);
 
+  const AddnewLabel =async(color:string,label:string)=>{
+     const userid=localStorage.getItem("tempcred");                             ///change it when implement user interface thing
+      const data=await axios.post("http://localhost:8000/api/features/addlabel",{
+        color:color,
+        name:label,
+        userid:userid
+      })
+      setCreateLabelOpen(false);
+      const availtags= await axios.post("http://localhost:8000/api/features/getlabels",{
+        id:localStorage.getItem("tempcred")
+       })
+     
+       
+       setavailableLabels(availtags.data.data
+)       //.log(availableLabels)
+       setLabelDialogOpen(true)
+      
+  }
 
+ 
 
   const toggleLabel = (label: any) => {
-    setSelectedLabels((prev) =>
-      prev.find((l) => l.id === label.id)
-        ? prev.filter((l) => l.id !== label.id)
+    console.log(label)
+    setSelectedLabels((prev:[labeltype]) =>
+      prev.find((l) => l._id === label._id)
+        ? prev.filter((l) => l.label.name !== label.label.name)
         : [...prev, label]
     );
   };
+
+  useEffect(()=>{
+    console.log("helllll", task)
+  const fetchlables=async()=>{
+    const availtags= await axios.post("http://localhost:8000/api/features/getlabels",{
+      id:localStorage.getItem("tempcred")
+     })
+   
+    
+ 
+     setavailableLabels(availtags.data.data)
+     console.log(typeof(availableLabels))
+     //.log(availableLabels)
+  }
+  fetchlables()
+  },[setCreateLabelOpen,setLabelDialogOpen])
+
+
+  const Updateorderlabel=async()=>{
+    if(task)
+    {
+      const cleanlabel=  selectedLabels.map(({ _id }:{_id:labeltype}) => _id);
+      const res= await axios.post("http://localhost:8000/api/orders/updatelabels",{
+        newlabels:cleanlabel,
+        orderid:task._id
+      })
+      
+      console.log(res)
+      fetchallorders()
+      setSelectedLabels(res.data.data[0].labels)
+      setLabelDialogOpen(false)
+    }
+ 
+  }
+
 
   const colors = ["bg-red-500", "bg-green-500", "bg-blue-500", "bg-yellow-400"];
 
@@ -79,18 +124,19 @@ export function TaskPanel({
           {task?.stockxitem[0].name}
           </div>
 
-          {/* Labels Section */}
           <div className="mb-6">
             <h3 className="text-sm font-semibold mb-2">Labels</h3>
             <div className="flex gap-2 flex-wrap">
-              {selectedLabels.map((label) => (
+              {selectedLabels&&selectedLabels.map((label:labeltype,index:number) =>
+               (
                 <div
-                  key={label.id}
-                  className={`px-3 py-1 text-sm rounded-full text-white ${label.color}`}
+                  key={label._id}
+                  className={`px-3 py-1 text-sm rounded-full text-white ${label.label.col}`}
                 >
-                  {label.name}
+                  {label.label.name}
                 </div>
-              ))}
+              )
+              )}
               <Button
                 size="icon"
                 variant="outline"
@@ -101,7 +147,7 @@ export function TaskPanel({
             </div>
           </div>
 
-          {/* Description Area */}
+       
       
             <div className="mb-4">
               <label className="text-sm font-medium mb-1 block">
@@ -118,33 +164,39 @@ export function TaskPanel({
   </DialogPortal>
 </Dialog>
 
-      {/* Nested Dialogs (Label Selector & Create Label) */}
-      <Dialog open={labelDialogOpen} onOpenChange={setLabelDialogOpen}>
+     
+      <Dialog open={labelDialogOpen} onOpenChange={()=>Updateorderlabel()}>
         <DialogContent className="sm:max-w-sm p-4">
           <DialogHeader>
             <DialogTitle>Select a Label</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-2 my-4">
-            {availableLabels.map((label) => (
+            {
+            
+            availableLabels&&availableLabels.map((label:any,index:number) => 
+           {
+             return(
+              
               <Button
-                key={label.id}
+                key={label._id}
                 variant="secondary"
                 onClick={() => toggleLabel(label)}
                 className={`justify-between ${
-                  selectedLabels.find((l) => l.id === label.id)
+                selectedLabels&&  selectedLabels.find((l:labeltype) => l._id === label._id)
                     ? "border-black"
                     : ""
                 }`}
               >
                 <div className="flex items-center gap-2">
-                  <span className={`w-3 h-3 rounded-full ${label.color}`} />
-                  {label.name}
+                  <span className={`w-3 h-3 rounded-full ${label.label.col}`} />
+                  {label.label.name}
                 </div>
-                {selectedLabels.find((l) => l.id === label.id) && (
+                {selectedLabels&&selectedLabels.find((l:labeltype) => l.label.name === label.label.name) && (
                   <Check size={16} />
                 )}
               </Button>
-            ))}
+            )}
+            )}
           </div>
           <Button
             variant="outline"
@@ -186,14 +238,7 @@ export function TaskPanel({
 
           <Button
             onClick={() => {
-              const label = {
-                id: Date.now(),
-                name: newLabel,
-                color: selectedColor,
-              };
-              setSelectedLabels((prev) => [...prev, label]);
-              setCreateLabelOpen(false);
-              setNewLabel("");
+             AddnewLabel(selectedColor,newLabel)
             }}
           >
             Add

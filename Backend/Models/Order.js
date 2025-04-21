@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+
 const OrderSchema = new mongoose.Schema(
   {
     Name: {
@@ -42,9 +43,18 @@ const OrderSchema = new mongoose.Schema(
     default: "NewLead",
   },
   userid:{
-    type:mongoose.Schema.Types.ObjectId,
+    type:[mongoose.Schema.Types.ObjectId],
     ref:"User",
     required:true,
+  },
+  labels:{
+    type:[mongoose.Schema.Types.ObjectId],
+    ref:"Label",
+    default:null
+  },
+  Description:{
+    type:String,
+    default:null,
   }
   },
   { timestamps: true } 
