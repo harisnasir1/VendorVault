@@ -39,8 +39,8 @@ const OrderSchema = new mongoose.Schema(
   },
   stage: {
     type: String,
-    enum: ["NewLead", "NeedToSource", "Offered", "WarmLead", "Won", "Lost"],
-    default: "NewLead",
+    enum: ["New Lead", "Need To Source", "Offered", "Warm Lead", "Won", "Lost"],
+    default: "New Lead",
   },
   userid:{
     type:[mongoose.Schema.Types.ObjectId],

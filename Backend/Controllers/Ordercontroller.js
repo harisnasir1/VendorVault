@@ -35,10 +35,10 @@ exports.getAllOrders = async (req, res) => {
     const orders = await Order.find({userid:id}).populate("items").populate("stockxitem").populate("labels");
    
     const columnOrder = [
-      "NewLead",
-      "NeedToSource",
+      "New Lead",
+      "Need To Source",
       "Offered",
-      "WarmLead",
+      "Warm Lead",
       "Won",
       "Lost",
     ];
@@ -91,7 +91,6 @@ exports.getAllOrders = async (req, res) => {
 
     res.status(200).json(maporderdata);
   } catch (error) {
-    console.error("Error fetching orders:", error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -170,7 +169,6 @@ exports.updatelabels=async (req,res)=>{
     
     const order=await  Order.updateOne({_id:orderid},{$set:{labels:newlabels}});
     const n=await Order.find({_id:orderid}).populate("labels");
-      //console.log(order)
      
      res.status(201).json({data:n})
   }
@@ -185,7 +183,6 @@ exports.UpdateDescription=async(req,res)=>{
   try{
      
     const {Description,orderid}=req.body;
-    console.log(Description)
     const order=await  Order.updateOne({_id:orderid},{$set:{Description:Description}});
     
     res.status(201).json({data:order})

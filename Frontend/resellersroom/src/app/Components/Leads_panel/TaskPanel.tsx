@@ -10,12 +10,9 @@ import {
   DialogOverlay
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Plus, Check } from "lucide-react";
+import { Plus, Check, X } from "lucide-react";
 import axios from "axios";
-import { Suggest,labeltype } from "../Small comps/Types";
-
-
-
+import { Suggest, labeltype,Task } from "../Small comps/Types";
 
 export function TaskPanel({
   open,
@@ -25,81 +22,109 @@ export function TaskPanel({
 }: {
   open: boolean;
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  task: Suggest|null;
-  fetchallorders: () => void
+  task: Task | null;
+  fetchallorders: () => void;
 }) {
   const [labelDialogOpen, setLabelDialogOpen] = useState(false);
   const [createLabelOpen, setCreateLabelOpen] = useState(false);
-  const [Description,setDescription]=useState<string>(task?.Description ?? "")
-  const [selectedLabels, setSelectedLabels] = useState<Suggest|null>(task?.labels);
+  const [Description, setDescription] = useState<string>(task?.Description ?? "");
+  const [selectedLabels, setSelectedLabels] = useState<labeltype[]>(task?.labels ?? []);
   const [newLabel, setNewLabel] = useState("");
   const [selectedColor, setSelectedColor] = useState("bg-blue-500");
-  const [availableLabels,setavailableLabels]=useState<any>([])
+  const [availableLabels, setavailableLabels] = useState<labeltype[]>([]);
   const dialogRef = useRef<HTMLDivElement>(null);
 
-  const AddnewLabel =async(color:string,label:string)=>{
-     const userid=localStorage.getItem("tempcred");                             ///change it when implement user interface thing
-      const data=await axios.post("http://localhost:8000/api/features/addlabel",{
-        color:color,
-        name:label,
-        userid:userid
-      })
+  const AddnewLabel = async (color: string, label: string) => {
+    try {
+      const userid = localStorage.getItem("tempcred");
+      if (!userid) return;
+
+      await axios.post("http://localhost:8000/api/features/addlabel", {
+        color: color,
+        name: label,
+        userid: userid
+      });
+
       setCreateLabelOpen(false);
-      const availtags= await axios.post("http://localhost:8000/api/features/getlabels",{
-        id:localStorage.getItem("tempcred")
-       })
-     
-       
-       setavailableLabels(availtags.data.data
-)       //.log(availableLabels)
-       setLabelDialogOpen(true)
-      
-  }
+      const availtags = await axios.post("http://localhost:8000/api/features/getlabels", {
+        id: userid
+      });
 
- 
-
-  const toggleLabel = (label: any) => {
-    
-    setSelectedLabels((prev:[labeltype]) =>
-      prev.find((l) => l._id === label._id)
-        ? prev.filter((l) => l.label.name !== label.label.name)
-        : [...prev, label]
-    );
+      setavailableLabels(availtags.data.data || []);
+      setLabelDialogOpen(true);
+    } catch (err) {
+      console.error("Failed to add label", err);
+    }
   };
 
-  useEffect(()=>{
-  
-  const fetchlables=async()=>{
-    const availtags= await axios.post("http://localhost:8000/api/features/getlabels",{
-      id:localStorage.getItem("tempcred")
-     })
-   
-    
- 
-     setavailableLabels(availtags.data.data)
-   
-     //.log(availableLabels)
-  }
-  fetchlables()
-  },[setCreateLabelOpen,setLabelDialogOpen])
+  const toggleLabel = async (label: any) => {
+    if (!task?._id) return;
 
+    const isAlreadySelected = selectedLabels.some((l) => l._id === label._id);
+    const updatedLabels = isAlreadySelected
+      ? selectedLabels.filter((l) => l._id !== label._id)
+      : [...selectedLabels, label];
 
-  const Updateorderlabel=async()=>{
-    if(task)
-    {
-      const cleanlabel=  selectedLabels.map(({ _id }:{_id:labeltype}) => _id);
-      const res= await axios.post("http://localhost:8000/api/orders/updatelabels",{
-        newlabels:cleanlabel,
-        orderid:task._id
-      })
-      
-      fetchallorders()
-      setSelectedLabels(res.data.data[0].labels)
-      setLabelDialogOpen(false)
+    setSelectedLabels(updatedLabels);
+
+    try {
+      const cleanlabel = updatedLabels.map(({ _id }: { _id: labeltype }) => _id);
+      const res = await axios.post("http://localhost:8000/api/orders/updatelabels", {
+        newlabels: cleanlabel,
+        orderid: task._id
+      });
+
+      fetchallorders();
+    } catch (err) {
+      console.error("Failed to update labels", err);
     }
- 
-  }
+  };
 
+  useEffect(() => {
+    const fetchLabels = async () => {
+      try {
+        const userid = localStorage.getItem("tempcred");
+        if (!userid) return;
+
+        const availtags = await axios.post("http://localhost:8000/api/features/getlabels", {
+          id: userid
+        });
+
+        setavailableLabels(availtags.data.data || []);
+      } catch (err) {
+        console.error("Failed to fetch labels", err);
+      }
+    };
+
+    fetchLabels();
+  }, [createLabelOpen, labelDialogOpen]);
+
+  const SupmitDesription = async () => {
+    if (!task?._id) return;
+    setOpen(false);
+
+    try {
+      await axios.post("http://localhost:8000/api/orders/UpdateDescription", {
+        Description: Description,
+        orderid: task._id
+      });
+      fetchallorders();
+    } catch (err) {
+      console.error("Failed to update description", err);
+    }
+  };
+  const handleDeleteLabel=async(id:string)=>{
+    try{
+         const res=await axios.post("http://localhost:8000/api/features/dellabel",{
+          id:id
+         })
+       setavailableLabels(  availableLabels.filter((label:labeltype)=> id!==label._id))
+         
+    }
+    catch{
+
+    }
+  }
 
   const colors = [
     "bg-red-500", "bg-green-500", "bg-blue-500", "bg-yellow-400",
@@ -112,115 +137,100 @@ export function TaskPanel({
     "bg-teal-400", "bg-indigo-400"
   ];
 
-  const SupmitDesription=async()=>{
-   
-    setOpen(false)
-    console.log("see")
-   
-      console.log("shit")
-   const r= await axios.post("http://localhost:8000/api/orders/UpdateDescription",{
-      Description:Description,
-      orderid:task._id
-    })
-    fetchallorders()
-
-  }
   return (
     <>
-<Dialog open={open} onOpenChange={()=>SupmitDesription()}>
-  <DialogPortal>
-    <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
-    <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-90 z-50">
-      <DialogHeader>
-        <DialogTitle className=" w-full text-center text-2xl">{task?.Name}</DialogTitle>
-      </DialogHeader>
+      <Dialog open={open} onOpenChange={() => SupmitDesription()}>
+        <DialogPortal>
+          <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
+          <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-90 z-50">
+            <DialogHeader>
+              <DialogTitle className="w-full text-center text-2xl">
+                {task?.Name ?? "Unnamed Task"}
+              </DialogTitle>
+            </DialogHeader>
 
-      <div className="flex justify-center   ">
-            <img
-              src={task?.stockxitem[0].image}
-              alt="Product"
-              className="w-40 h-40 object-contain rounded-lg"
-            />
-          </div>
-          <div className=" text-lg text-center font-bold ">
-          {task?.stockxitem[0].name}
-          </div>
+            {task?.stockxitem?.[0]?.image && (
+              <div className="flex justify-center">
+                <img
+                  src={task.stockxitem[0].image}
+                  alt="Product"
+                  className="w-40 h-40 object-contain rounded-lg"
+                />
+              </div>
+            )}
+            {task?.stockxitem?.[0]?.name && (
+              <div className="text-lg text-center font-bold">
+                {task.stockxitem[0].name}
+              </div>
+            )}
 
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold mb-2">Labels</h3>
-            <div className="flex gap-2 flex-wrap">
-              {selectedLabels&&selectedLabels.map((label:labeltype,index:number) =>
-               (
-                <div
-                  key={label._id}
-                  className={`px-3 py-1 text-sm rounded-full text-white ${label.label.col}`}
-                >
-                  {label.label.name}
-                </div>
-              )
-              )}
-              <Button
-                size="icon"
-                variant="outline"
-                onClick={() => setLabelDialogOpen(true)}
-              >
-                <Plus size={16} />
-              </Button>
+            <div className="mb-6">
+              <h3 className="text-sm font-semibold mb-2">Labels</h3>
+              <div className="flex gap-2 flex-wrap">
+                {selectedLabels?.map((label, index) => (
+                  <div
+                    key={label._id}
+                    className={`px-3 py-1 text-sm rounded-full text-white flex items-center gap-1 ${label.label.col}`}
+                  >
+                    {label.label.name}
+                    <button
+                      onClick={() => toggleLabel(label)}
+                      className="text-white hover:text-gray-200"
+                      title="Remove label"
+                    >
+                      <X size={12} />
+                    </button>
+                  </div>
+                ))}
+                <Button size="icon" variant="outline" onClick={() => setLabelDialogOpen(true)}>
+                  <Plus size={16} />
+                </Button>
+              </div>
             </div>
-          </div>
 
-       
-      
             <div className="mb-4">
-              <label className="text-sm font-medium mb-1 block">
-                Description
-              </label>
+              <label className="text-sm font-medium mb-1 block">Description</label>
               <textarea
                 value={Description}
-                onChange={(e)=>setDescription(e.target.value)}
+                onChange={(e) => setDescription(e.target.value)}
                 rows={5}
                 className="w-full rounded-md border p-2 text-sm resize-none"
                 placeholder="Add task description..."
               />
             </div>
- 
-    </DialogContent>
-  </DialogPortal>
-</Dialog>
+          </DialogContent>
+        </DialogPortal>
+      </Dialog>
 
-     
-      <Dialog open={labelDialogOpen} onOpenChange={()=>Updateorderlabel()}>
+      <Dialog open={labelDialogOpen} onOpenChange={() => setLabelDialogOpen(false)}>
         <DialogContent className="sm:max-w-sm p-4">
           <DialogHeader>
             <DialogTitle>Select a Label</DialogTitle>
           </DialogHeader>
           <div className="grid grid-cols-2 gap-2 my-4">
-            {
-            
-            availableLabels&&availableLabels.map((label:any,index:number) => 
-           {
-             return(
-              
-              <Button
-                key={label._id}
-                variant="secondary"
-                onClick={() => toggleLabel(label)}
-                className={`justify-between ${
-                selectedLabels&&  selectedLabels.find((l:labeltype) => l._id === label._id)
-                    ? "border-black"
-                    : ""
-                }`}
-              >
-                <div className="flex items-center gap-2">
-                  <span className={`w-3 h-3 rounded-full ${label.label.col}`} />
-                  {label.label.name}
-                </div>
-                {selectedLabels&&selectedLabels.find((l:labeltype) => l.label.name === label.label.name) && (
-                  <Check size={16} />
-                )}
-              </Button>
-            )}
-            )}
+          {availableLabels?.map((label) => (
+  <div key={label._id} className="flex items-center justify-between gap-2 border p-2 rounded-md">
+    <Button
+      variant="ghost"
+      onClick={() => toggleLabel(label)}
+      className="flex-grow justify-start gap-2"
+    >
+      <span className={`w-3 h-3 rounded-full ${label.label.col}`} />
+      {label.label.name}
+      {selectedLabels?.find((l) => l._id === label._id) && <Check size={16} />}
+    </Button>
+
+      <Button
+        size="icon"
+        variant="ghost"
+        onClick={() => handleDeleteLabel(label._id)}
+        className="ml-2 w-5 h-5 cursor-pointer"
+      >
+      <X size={14} />
+    </Button>
+  </div>
+))}
+
           </div>
           <Button
             variant="outline"
@@ -245,28 +255,18 @@ export function TaskPanel({
             value={newLabel}
             onChange={(e) => setNewLabel(e.target.value)}
           />
-
           <div className="flex gap-2 flex-wrap mb-4">
             {colors.map((color) => (
               <div
                 key={color}
                 className={`w-8 h-8 rounded-full cursor-pointer border-2 ${
-                  selectedColor === color
-                    ? "border-black"
-                    : "border-transparent"
+                  selectedColor === color ? "border-black" : "border-transparent"
                 } ${color}`}
                 onClick={() => setSelectedColor(color)}
               />
             ))}
           </div>
-
-          <Button
-            onClick={() => {
-             AddnewLabel(selectedColor,newLabel)
-            }}
-          >
-            Add
-          </Button>
+          <Button onClick={() => AddnewLabel(selectedColor, newLabel)}>Add</Button>
         </DialogContent>
       </Dialog>
     </>

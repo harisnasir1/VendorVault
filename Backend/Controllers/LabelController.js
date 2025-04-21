@@ -7,7 +7,7 @@ exports.addlabel = async (req, res) => {
 
     // Check if a label with the same name already exists for the user
     const check = await Label.find({ userid: userid, "label.name": name });
-     console.log(check)
+  
     if (check.length > 0) {
       return res.status(201).json({ message: "Name is already taken" }); // Use 409 Conflict
     } else {
@@ -21,7 +21,7 @@ exports.addlabel = async (req, res) => {
       return res.status(201).json({ message: newLabel });
     }
   } catch (err) {
-    console.error(err);
+   
     res.status(500).json({ message: "Error on adding labels" });
   }
 };
@@ -37,4 +37,17 @@ exports.getlabels=async(req,res)=>{
  {
    res.status(201).json({message:"error on getting availabel labels"})
  }
+}
+
+exports.dellabel=async(req,res)=>{
+  try{
+    const {id}=req.body
+    const d= await Label.deleteOne({_id:id});
+   
+    res.status(201).json({data:data});
+  }
+  catch(err)
+  {
+    res.status(201).json({message:"error on deleting availabel labels"})
+  }
 }

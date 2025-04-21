@@ -13,8 +13,8 @@ export type Suggest = {
     name:string,
     image:string
   }];
-  labels:labeltype
-  label:labeltype
+  labels:labeltype[]
+  
   sku: string;
   Name: string;
   slug: string;
@@ -43,4 +43,27 @@ export type Suggest = {
   }
 
 }
+interface Label {
+  label: {
+    name: string;
+    col: string;
+  };
+}
 
+interface StockXItem {
+  image: string;
+  name: string;
+}
+
+export interface Task {
+  _id:string
+  id: number;
+  Name: string;
+  condition: string;
+  size: string;
+  stage: string;
+  createdAt: string;
+  stockxitem: StockXItem[];
+  labels: labeltype[];
+  Description:string
+}

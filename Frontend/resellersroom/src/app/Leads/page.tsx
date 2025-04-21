@@ -330,10 +330,10 @@ export default function page({}: Props) {
               }}
               className="bg-gray-50 border border-black text-gray-900 text-sm rounded-lg  p-2.5 ml-1.5"
             >
-              <option value="NewLead">NewLead</option>
-              <option value="NeedToSource">Need To Source</option>
+              <option value="New Lead">NewLead</option>
+              <option value="Need To Source">Need To Source</option>
               <option value="Offered">Offered</option>
-              <option value="WarmLead">WarmLead</option>
+              <option value="Warm Lead">WarmLead</option>
               <option value="Won">Won</option>
               <option value="Lost">Lost</option>
             </select>
