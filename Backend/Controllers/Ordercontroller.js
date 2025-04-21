@@ -180,3 +180,19 @@ exports.updatelabels=async (req,res)=>{
 
   }
 }
+
+exports.UpdateDescription=async(req,res)=>{
+  try{
+     
+    const {Description,orderid}=req.body;
+    console.log(Description)
+    const order=await  Order.updateOne({_id:orderid},{$set:{Description:Description}});
+    
+    res.status(201).json({data:order})
+  
+  }
+  catch(err)
+  {
+     res.status(500).json({message:"error on updating Description"})
+  }
+}

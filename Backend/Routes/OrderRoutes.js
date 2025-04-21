@@ -12,5 +12,8 @@ router.get("/orders/:id", orderController.getOrderById);
 router.put("/orders/:id", orderController.updateOrder);
 router.delete("/orders/:id", orderController.deleteOrder);
 router.post("/updatelabels",orderController.updatelabels)
+router.post("/UpdateDescription",orderController.UpdateDescription)
+
+
 module.exports=router;
 

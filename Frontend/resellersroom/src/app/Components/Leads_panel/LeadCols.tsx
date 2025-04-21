@@ -19,7 +19,6 @@ const LeadCols = (props: Props) => {
   const { setNodeRef } = useDroppable({
     id: props.column.id, 
   });
-  console.log(typeof(props.fetchallorders)) 
   return (
     <div className="lg:w-[20vw] lg:h-[90vh] w-[70vw] h-[80vh] flex flex-col py-3 px-2 ">
     

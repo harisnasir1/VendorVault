@@ -27,7 +27,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   const handleMainClick = (msg:String) => {
 
-    console.log(window.innerWidth)
     if (window.innerWidth < 800 && msg!="menubtn" ) {
         
       setSideOpen(false);

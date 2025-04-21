@@ -20,6 +20,7 @@ export type Suggest = {
   slug: string;
   brand: string;
   image: string;
+  Description:string
   createdAt: string;
   updatedAt: string;
 };

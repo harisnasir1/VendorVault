@@ -30,7 +30,8 @@ export function TaskPanel({
 }) {
   const [labelDialogOpen, setLabelDialogOpen] = useState(false);
   const [createLabelOpen, setCreateLabelOpen] = useState(false);
-  const [selectedLabels, setSelectedLabels] = useState<Suggest>(task?.labels);
+  const [Description,setDescription]=useState<string>(task?.Description ?? "")
+  const [selectedLabels, setSelectedLabels] = useState<Suggest|null>(task?.labels);
   const [newLabel, setNewLabel] = useState("");
   const [selectedColor, setSelectedColor] = useState("bg-blue-500");
   const [availableLabels,setavailableLabels]=useState<any>([])
@@ -58,7 +59,7 @@ export function TaskPanel({
  
 
   const toggleLabel = (label: any) => {
-    console.log(label)
+    
     setSelectedLabels((prev:[labeltype]) =>
       prev.find((l) => l._id === label._id)
         ? prev.filter((l) => l.label.name !== label.label.name)
@@ -67,7 +68,7 @@ export function TaskPanel({
   };
 
   useEffect(()=>{
-    console.log("helllll", task)
+  
   const fetchlables=async()=>{
     const availtags= await axios.post("http://localhost:8000/api/features/getlabels",{
       id:localStorage.getItem("tempcred")
@@ -76,7 +77,7 @@ export function TaskPanel({
     
  
      setavailableLabels(availtags.data.data)
-     console.log(typeof(availableLabels))
+   
      //.log(availableLabels)
   }
   fetchlables()
@@ -92,7 +93,6 @@ export function TaskPanel({
         orderid:task._id
       })
       
-      console.log(res)
       fetchallorders()
       setSelectedLabels(res.data.data[0].labels)
       setLabelDialogOpen(false)
@@ -101,11 +101,33 @@ export function TaskPanel({
   }
 
 
-  const colors = ["bg-red-500", "bg-green-500", "bg-blue-500", "bg-yellow-400"];
+  const colors = [
+    "bg-red-500", "bg-green-500", "bg-blue-500", "bg-yellow-400",
+    "bg-purple-500", "bg-pink-500", "bg-indigo-500", "bg-teal-500",
+    "bg-orange-500", "bg-lime-500", "bg-emerald-500", "bg-cyan-500",
+    "bg-rose-500", "bg-violet-500", "bg-fuchsia-500", "bg-sky-500",
+    "bg-amber-500", "bg-gray-500", "bg-zinc-500", "bg-neutral-500",
+    "bg-stone-500", "bg-blue-400", "bg-green-400", "bg-red-400",
+    "bg-pink-400", "bg-purple-400", "bg-yellow-300", "bg-orange-400",
+    "bg-teal-400", "bg-indigo-400"
+  ];
 
+  const SupmitDesription=async()=>{
+   
+    setOpen(false)
+    console.log("see")
+   
+      console.log("shit")
+   const r= await axios.post("http://localhost:8000/api/orders/UpdateDescription",{
+      Description:Description,
+      orderid:task._id
+    })
+    fetchallorders()
+
+  }
   return (
     <>
-<Dialog open={open} onOpenChange={setOpen}>
+<Dialog open={open} onOpenChange={()=>SupmitDesription()}>
   <DialogPortal>
     <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
     <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in-90 z-50">
@@ -154,6 +176,8 @@ export function TaskPanel({
                 Description
               </label>
               <textarea
+                value={Description}
+                onChange={(e)=>setDescription(e.target.value)}
                 rows={5}
                 className="w-full rounded-md border p-2 text-sm resize-none"
                 placeholder="Add task description..."
