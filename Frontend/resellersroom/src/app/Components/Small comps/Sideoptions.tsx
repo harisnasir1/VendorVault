@@ -8,7 +8,7 @@ const Slide = ({img, name, link, number}: {img: string, link: string, name: stri
     const [nleads,setnleads]=useState<number>(0)
     useEffect(()=>{
        const fetchleadsnumber=async()=>{
-        const n=(await axios.get("http://localhost:8000/api/orders/getnumberofleads")).data;
+        const n=(await axios.get(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/orders/getnumberofleads`)).data;
         console.log(n.data)
         setnleads(n.data)
        }

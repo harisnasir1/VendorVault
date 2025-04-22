@@ -16,7 +16,7 @@ function Requestpanle({sideopen,suggesteddata,setsuggesteddata}:
   // const [search,setsearch]=useState<string>("")
   const Getdata=async(msg:string)=>{
     console.log("click",msg)
-   const data= await axios.post("http://localhost:8000/api/Stockx/getstockstore",{
+   const data= await axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/Stockx/getstockstore`,{
     search:msg
    })
  

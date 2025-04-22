@@ -47,6 +47,8 @@ export default function Page({}: Props) {
   const [activeCard, setActiveCard] = useState<Task|null>(null);
   const [smcolumn, setsmcolumn] = useState<string>("New Lead");
   const [userid, setuserid] = useState<string | null>("");
+ 
+
   const sensors = useSensors(
     useSensor(MouseSensor, {
       activationConstraint: {
@@ -63,6 +65,7 @@ export default function Page({}: Props) {
   );
   
   useEffect(() => {
+
     dispatch(Toggleleadsrenderstep(0));
     if (typeof window !== "undefined") {
       const id = localStorage.getItem("tempcred");
@@ -72,7 +75,7 @@ export default function Page({}: Props) {
   const fetchallorders = async () => {
     if(userid!=""){
     const mongodata = (
-      await axios.post("http://localhost:8000/api/orders/getAllOrders", {
+      await axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/orders/getAllOrders`, {
         id: userid,
       })
     ).data;
@@ -204,7 +207,7 @@ export default function Page({}: Props) {
 
     setstate(newState);
     setActiveCard(null);
-    axios.post("http://localhost:8000/api/orders/UpdateStages", {
+    axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/orders/UpdateStages`, {
       taskid: currenttask,
       newstage: destinationCol.id,
     });}
@@ -256,13 +259,11 @@ export default function Page({}: Props) {
     };
     setstate(n);
     setActiveCard(null);
-    axios.post("http://localhost:8000/api/orders/UpdateStages", {
+    axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/orders/UpdateStages`, {
       taskid: task_id,
       newstage: newStage,
     });}
   };
-
- 
 
   return (
     <DndContext onDragStart={DragStart} onDragEnd={DragEnd}  sensors={sensors}>

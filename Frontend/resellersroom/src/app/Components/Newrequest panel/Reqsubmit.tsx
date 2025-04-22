@@ -33,7 +33,7 @@ const Firsthalf = ({
   },[])
   const SearchCustomer = async () => {
     const serchresult = await axios.post(
-      "http://localhost:8000/api/customers/getCustomersbyboth",
+      `${process.env.NEXT_PUBLIC_SERVER_HOST}/api/customers/getCustomersbyboth`,
       {
         search: searchclient,
         id:userid
@@ -267,7 +267,7 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
         Condition:Selectcondition,
         userid,
       }
-   const result=await   axios.post("http://localhost:8000/api/orders/CreateOrders",{
+   const result=await   axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/orders/CreateOrders`,{
         newOrder:newOrder
       })
    

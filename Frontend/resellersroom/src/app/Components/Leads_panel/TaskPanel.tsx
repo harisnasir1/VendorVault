@@ -42,14 +42,14 @@ export function TaskPanel({
       const userid = localStorage.getItem("tempcred");
       if (!userid) return;
 
-      await axios.post("http://localhost:8000/api/features/addlabel", {
+      await axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/features/addlabel`, {
         color: color,
         name: label,
         userid: userid
       });
 
       setCreateLabelOpen(false);
-      const availtags = await axios.post("http://localhost:8000/api/features/getlabels", {
+      const availtags = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/features/getlabels`, {
         id: userid
       });
 
@@ -73,7 +73,7 @@ export function TaskPanel({
 
     try {
       const cleanlabel =  updatedLabels.map(({ _id }) => _id);;
-       await axios.post("http://localhost:8000/api/orders/updatelabels", {
+       await axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/orders/updatelabels`, {
         newlabels: cleanlabel,
         orderid: task._id
       });
@@ -90,7 +90,7 @@ export function TaskPanel({
         const userid = localStorage.getItem("tempcred");
         if (!userid) return;
 
-        const availtags = await axios.post("http://localhost:8000/api/features/getlabels", {
+        const availtags = await axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/features/getlabels`, {
           id: userid
         });
 
@@ -108,7 +108,7 @@ export function TaskPanel({
     setOpen(false);
 
     try {
-      await axios.post("http://localhost:8000/api/orders/UpdateDescription", {
+      await axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/orders/UpdateDescription`, {
         Description: Description,
         orderid: task._id
       });
@@ -119,7 +119,7 @@ export function TaskPanel({
   };
   const handleDeleteLabel=async(id:string)=>{
     try{
-       await axios.post("http://localhost:8000/api/features/dellabel",{
+       await axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/features/dellabel`,{
           id:id
          })
        setavailableLabels(  availableLabels.filter((label:labeltype)=> id!==label._id))

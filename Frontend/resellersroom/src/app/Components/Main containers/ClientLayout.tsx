@@ -12,7 +12,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
 
   useEffect(()=>{
       const fetchtempuser=async()=>{
-       const res= await axios.post("http://localhost:8000/api/users/login",{
+       const res= await axios.post(`${process.env.NEXT_PUBLIC_SERVER_HOST}/api/users/login`,{
         email:process.env.NEXT_PUBLIC_EMAIL,
         password:process.env.NEXT_PUBLIC_PASSWORD
        })
