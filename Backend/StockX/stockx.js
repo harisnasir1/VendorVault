@@ -2,7 +2,7 @@ const Stockx=()=>{
 const options = {
     method: 'GET',
     headers: {
-      'x-api-key': '0599f204-c1eb-4f41-8cca-5ee39e48e764' 
+      'x-api-key':process.env.RETAIL_API_KEY
     }
   };
   const searchTerm = 'airjordan';
