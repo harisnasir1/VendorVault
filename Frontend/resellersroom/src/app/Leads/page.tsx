@@ -8,45 +8,21 @@ import {
   TouchSensor,
   useSensor,
   useSensors,
+  DragStartEvent,
+  DragEndEvent
 } from "@dnd-kit/core";
 import DraggableCard from "../Components/Leads_panel/DraggableCard";
 import axios from "axios";
-import { useSelector, useDispatch } from 'react-redux';
-import { Reseller, RootState } from "@/lib/Resellerstore";
-import {addItem,Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
-
+import {  useDispatch } from 'react-redux';
+//import { Reseller, RootState } from "@/lib/Resellerstore";
+import {Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
+import { statetype, Task } from "../Components/Small comps/Types";
 const LeadCols = dynamic(() => import("../Components/Leads_panel/LeadCols"), {
   ssr: false,
 });
 
-type Props = {};
+type Props =object;
 
-type task={
-  id:number,
-  _id:string,
-  Name:string,
-  stockxitem:string,
-  shopifycustomerid:string,
-  cusid:string,
-  size:string,
-  condition:string,
-  stage:string,
-  createdAt:string,
-}
-type column={
-  id:number,
-  title:string,
-  taskIds:number[]
-}
-type statetype={
-  tasks:{
-   [ key:string]:task
-  },
-  columns:{
-    [key:string]:column
-  },
-  columnOrder:string[]
-}
 
 
 function useIsSmallScreen() {
@@ -65,11 +41,11 @@ function useIsSmallScreen() {
   return isSmallScreen;
 }
 
-export default function page({}: Props) {
+export default function Page({}: Props) {
   const dispatch=useDispatch()
   const [state, setstate] = useState<statetype>();
-  const [activeCard, setActiveCard] = useState(null);
-  const [smcolumn, setsmcolumn] = useState<string>("NewLead");
+  const [activeCard, setActiveCard] = useState<Task|null>(null);
+  const [smcolumn, setsmcolumn] = useState<string>("New Lead");
   const [userid, setuserid] = useState<string | null>("");
   const sensors = useSensors(
     useSensor(MouseSensor, {
@@ -111,17 +87,19 @@ export default function page({}: Props) {
 
   const isSmallScreen = useIsSmallScreen();
 
-  const DragStart = (event: any) => {
+  const DragStart = (event: DragStartEvent) => {
   if(state) { const { active } = event;
-    const taskId = parseInt(active.id);
+    const taskId = parseInt(active.id as string);
     const task = findTaskById(state, taskId);
-    
-    const colId = findColumnByTaskId(state, taskId);
    
-    setActiveCard(task);}
+   // const colId = findColumnByTaskId(state, taskId);
+   
+    setActiveCard(task);
+    
+  }
   };
 
-  const findTaskById = (state: any, id: number) => {
+  const findTaskById = (state: statetype, id: number) => {
     return state.tasks[id];
   };
 
@@ -135,22 +113,23 @@ export default function page({}: Props) {
     return "";
   };
 
-  const DragEnd = (event: any) => {
+  const DragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
 
     if (!over ) return setActiveCard(null);
     if(state)
       {
-    const currenttask = findTaskById(state, active.id);
-    const activeId = parseInt(active.id);
+        const taskid= parseInt(active.id as string);
+    const currenttask = findTaskById(state, taskid);
+  
     const overId = over.id;
 
-    const sourceColId = findColumnByTaskId(state, activeId);
+    const sourceColId = findColumnByTaskId(state, taskid);
 // CASE 1: over.id is a column → dropped into empty space in column
     const isOverAColumn = state.columns.hasOwnProperty(overId);
     const destinationColId = isOverAColumn
       ? overId
-      : findColumnByTaskId(state, parseInt(overId));
+      : findColumnByTaskId(state, parseInt(overId as string));
 
     if (!destinationColId) return setActiveCard(null);
 
@@ -159,11 +138,11 @@ export default function page({}: Props) {
 
     if (sourceColId === destinationColId) {
       // Reordering in the same column
-      const oldIndex = sourceCol.taskIds.indexOf(activeId);
+      const oldIndex = sourceCol.taskIds.indexOf(taskid);
 
       const newIndex = isOverAColumn
         ? sourceCol.taskIds.length
-        : sourceCol.taskIds.indexOf(parseInt(overId));
+        : sourceCol.taskIds.indexOf(parseInt(overId as string));
 
       if (oldIndex === newIndex) {
         setActiveCard(null);
@@ -172,7 +151,7 @@ export default function page({}: Props) {
 
       const newTaskIds = [...sourceCol.taskIds];
       newTaskIds.splice(oldIndex, 1); // remove active
-      newTaskIds.splice(newIndex, 0, activeId); // insert at new index
+      newTaskIds.splice(newIndex, 0, taskid); // insert at new index
 
       const newState = {
         ...state,
@@ -190,14 +169,14 @@ export default function page({}: Props) {
     }
 
     // CASE 2: Moving to a different column
-    const newSourceTaskIds = sourceCol.taskIds.filter((id) => id !== activeId);
+    const newSourceTaskIds = sourceCol.taskIds.filter((id) => id !== taskid);
 
     const newDestinationTaskIds = isOverAColumn
-      ? [...destinationCol.taskIds, activeId] // just push at end
+      ? [...destinationCol.taskIds, taskid] // just push at end
       : (() => {
-          const index = destinationCol.taskIds.indexOf(parseInt(overId));
+          const index = destinationCol.taskIds.indexOf(parseInt(overId as string));
           const updated = [...destinationCol.taskIds];
-          updated.splice(index, 0, activeId);
+          updated.splice(index, 0, taskid);
           return updated;
         })();
 
@@ -302,7 +281,7 @@ export default function page({}: Props) {
               state.columnOrder.map((ColumnId, index) => {
                 const column = state.columns[ColumnId];
                 const tasks = column.taskIds.map(
-                  (taskId, index) => state.tasks[taskId]
+                  (taskId) => state.tasks[taskId]
                 ); // Fetch your MongoDB data here if needed
                 return (
                   <LeadCols
@@ -344,7 +323,7 @@ export default function page({}: Props) {
             state.columnOrder.map((ColumnId, index) => {
               const column = state.columns[ColumnId];
               const tasks = column.taskIds.map(
-                (taskId, index) => state.tasks[taskId]
+                (taskId) => state.tasks[taskId]
               );
               if (smcolumn == ColumnId) {
                 return (
@@ -365,59 +344,59 @@ export default function page({}: Props) {
       )}
 
       <DragOverlay>
-        {activeCard ? <DraggableCard task={activeCard} column={{}} disableDrag Manualcolchange={Manualcolchange} fetchallorders={fetchallorders} /> : null}
+        {activeCard ? <DraggableCard task={activeCard}  disableDrag Manualcolchange={Manualcolchange} fetchallorders={fetchallorders} /> : null}
       </DragOverlay>
     </DndContext>
   );
 }
 
-const initialData = {
-  tasks: {
-    "1": { id: 1, content: "Configure Next.js application" },
-    "2": { id: 2, content: "Configure Next.js and tailwind " },
-    "3": { id: 3, content: "Create sidebar navigation menu" },
-    "4": { id: 4, content: "Create page footer" },
-    "5": { id: 5, content: "Create page navigation menu" },
-    "6": { id: 6, content: "Create page layout" },
-  },
-  columns: {
-    NewLead: {
-      id: "NewLead",
-      title: "New Lead",
-      taskIds: [1, 2, 3, 4],
-    },
-    NeedToSource: {
-      id: "NeedToSource",
-      title: "Need To Source",
-      taskIds: [5],
-    },
-    Offered: {
-      id: "Offered",
-      title: "Offered",
-      taskIds: [],
-    },
-    WarmLead: {
-      id: "WarmLead",
-      title: "Warm Lead",
-      taskIds: [6],
-    },
-    Won: {
-      id: "Won",
-      title: "Won",
-      taskIds: [],
-    },
-    Lost: {
-      id: "Lost",
-      title: "Lost",
-      taskIds: [],
-    },
-  },
-  columnOrder: [
-    "NewLead",
-    "NeedToSource",
-    "Offered",
-    "WarmLead",
-    "Won",
-    "Lost",
-  ],
-};
+// const initialData = {
+//   tasks: {
+//     "1": { id: 1, content: "Configure Next.js application" },
+//     "2": { id: 2, content: "Configure Next.js and tailwind " },
+//     "3": { id: 3, content: "Create sidebar navigation menu" },
+//     "4": { id: 4, content: "Create page footer" },
+//     "5": { id: 5, content: "Create page navigation menu" },
+//     "6": { id: 6, content: "Create page layout" },
+//   },
+//   columns: {
+//     NewLead: {
+//       id: "NewLead",
+//       title: "New Lead",
+//       taskIds: [1, 2, 3, 4],
+//     },
+//     NeedToSource: {
+//       id: "NeedToSource",
+//       title: "Need To Source",
+//       taskIds: [5],
+//     },
+//     Offered: {
+//       id: "Offered",
+//       title: "Offered",
+//       taskIds: [],
+//     },
+//     WarmLead: {
+//       id: "WarmLead",
+//       title: "Warm Lead",
+//       taskIds: [6],
+//     },
+//     Won: {
+//       id: "Won",
+//       title: "Won",
+//       taskIds: [],
+//     },
+//     Lost: {
+//       id: "Lost",
+//       title: "Lost",
+//       taskIds: [],
+//     },
+//   },
+//   columnOrder: [
+//     "NewLead",
+//     "NeedToSource",
+//     "Offered",
+//     "WarmLead",
+//     "Won",
+//     "Lost",
+//   ],
+// };

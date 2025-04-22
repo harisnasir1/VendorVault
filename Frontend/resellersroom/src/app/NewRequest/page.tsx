@@ -6,22 +6,15 @@ import { Suggest } from "../Components/Small comps/Types";
 
 import Reqsubmit from "../Components/Newrequest panel/Reqsubmit";
 import { AnimatePresence, motion, Variants } from "framer-motion";
-import { useSelector, useDispatch } from 'react-redux';
-import { Reseller, RootState } from "@/lib/Resellerstore";
-import {addItem,Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
-
-type pageProps = {
-  sideopen: boolean;
-  ClassName: string;
-};
-
+import { useSelector } from 'react-redux';
+import { RootState } from "@/lib/Resellerstore";
 type DirectionProps = {
   direction: number;
 };
 
 const variants: Variants = {
-  enter: ({ direction }: DirectionProps) => ({
-    x: direction > 0 ? 300 : -300,
+  enter: (custom: DirectionProps) => ({
+    x: custom.direction > 0 ? 300 : -300,
     opacity: 0,
     position: "absolute",
     zIndex: 3,
@@ -32,35 +25,31 @@ const variants: Variants = {
     position: "absolute",
     zIndex: 4,
   },
-  exit: ({ direction }: DirectionProps) => ({
-    x: direction > 0 ? -300 : 300,
+  exit: (custom: DirectionProps) => ({
+    x: custom.direction > 0 ? -300 : 300,
     opacity: 0,
     position: "absolute",
     zIndex: 3,
   }),
 };
 
-const Page: React.FC<pageProps> = (props) => {
-  const dispatch = useDispatch(); 
+const Page: React.FC = () => {
   const [suggesteddata, setsuggesteddata] = useState<Suggest[]>([]);
- // const { renderstep, direction } = useSelection();
-  const renderstep=useSelector((state:RootState)=>state.NewReq.renderstep)
-  const direction =useSelector((state:RootState)=>state.NewReq.direction)
- 
- 
+  const renderstep = useSelector((state: RootState) => state.NewReq.renderstep);
+  const direction = useSelector((state: RootState) => state.NewReq.direction);
+
+  // If you need sideOpen or className — move them into context or global state
+
   return (
-    <div
-      className={`relative w-full h-full flex justify-center items-center overflow-hidden ${props.ClassName}`} >
-     
+    <div className="relative w-full h-full flex justify-center items-center overflow-hidden">
       {renderstep === 0 && (
         <Requestpanle
-          sideopen={props.sideopen}
+          sideopen={true} // <- replace with whatever logic or remove if not used
           suggesteddata={suggesteddata}
           setsuggesteddata={setsuggesteddata}
         />
       )}
 
-     
       {[2, 3, 4].includes(renderstep) && (
         <motion.div
           key="step2"
@@ -73,11 +62,10 @@ const Page: React.FC<pageProps> = (props) => {
           className="w-full h-full flex justify-center items-center"
           style={{ zIndex: renderstep === 2 ? 3 : 2 }}
         >
-          <Reqsubmit sideopen={props.sideopen} />
+          <Reqsubmit sideopen={true} />
         </motion.div>
       )}
 
-    
       <AnimatePresence mode="wait" custom={{ direction }}>
         {renderstep === 3 && (
           <motion.div
@@ -91,7 +79,7 @@ const Page: React.FC<pageProps> = (props) => {
             className="w-full h-full flex justify-center items-center"
             style={{ zIndex: 4 }}
           >
-           <Newcustomer  sideopen={props.sideopen}/>
+            <Newcustomer sideopen={true} />
           </motion.div>
         )}
 

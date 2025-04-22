@@ -1,5 +1,5 @@
-import React,{ReactNode} from 'react'
-import Requestpanle from '../Newrequest panel/Requestpanle'
+import React from 'react'
+// import Requestpanle from '../Newrequest panel/Requestpanle'
 type Props = {
     sideopen: boolean;
    
@@ -20,7 +20,7 @@ function MainContainer(props: Props) {
            flex justify-center align-middle items-center
         `}
   >
-    <Requestpanle sideopen={props.sideopen}/>
+    
   </div>  )
 }
 

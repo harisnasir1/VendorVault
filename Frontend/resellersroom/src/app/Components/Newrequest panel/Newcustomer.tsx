@@ -2,8 +2,8 @@
 import React,{useState,useEffect} from 'react';
 import axios from 'axios';
 import { useSelector, useDispatch } from 'react-redux';
-import { Reseller, RootState } from "@/lib/Resellerstore";
-import {addItem,Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
+import {  RootState } from "@/lib/Resellerstore";
+import {Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
 type Props = {
   sideopen: boolean;
 };

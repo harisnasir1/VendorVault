@@ -1,11 +1,11 @@
 import React,{useState} from "react";
 
-type Props = {
-  search:String,
-  setsesetsearch:React.Dispatch<React.SetStateAction<String>>
-};
+// type Props = {
+//   search:string,
+//   setsesetsearch:React.Dispatch<React.SetStateAction<string>>
+// };
 
-function Requestserch({search,setsearch,Getdata}: {search:String,setsearch:React.Dispatch<React.SetStateAction<String>>,Getdata:(msg:String)=>void}) {
+function Requestserch({Getdata}: {Getdata:(msg:string)=>void}) {
   const [t,sett]=useState("");
   return (
     <div className="w-full   lg:h-[18%] md:[19%] h-[12%] flex flex-col items-center p-2">

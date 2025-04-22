@@ -1,15 +1,15 @@
 "use client";
-import React, { useState, ReactNode } from "react";
+import React from "react";
 
-type pageProps = {};
+type pageProps = object;
 
 
 
-const page: React.FC<pageProps> = () => {
+const Page: React.FC<pageProps> = () => {
     
-  const [sideopen, setsideopen] = useState<boolean>(true  );
-  const [Conversations,SetConversations]=useState<string []>([])
-  const [ selectcon,setselectedcon]=useState("")
+  // const [sideopen, setsideopen] = useState<boolean>(true  );
+  // const [Conversations,SetConversations]=useState<string []>([])
+  // const [ selectcon,setselectedcon]=useState("")
 
   return (
     <>
@@ -21,4 +21,4 @@ const page: React.FC<pageProps> = () => {
     </>
   );
 };
-export default page;
+export default Page;

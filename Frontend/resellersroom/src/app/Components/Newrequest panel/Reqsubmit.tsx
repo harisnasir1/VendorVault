@@ -1,28 +1,28 @@
 "use client"
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Custprop } from "../Small comps/Types";
+import { Custprop ,dCustomerArray} from "../Small comps/Types";
 import { redirect } from 'next/navigation'
 import { useSelector, useDispatch } from 'react-redux';
-import { Reseller, RootState } from "@/lib/Resellerstore";
-import {addItem,Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
-type Props = {};
+import {  RootState } from "@/lib/Resellerstore";
+import {Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
+// type Props = {};
 const Firsthalf = ({
   sugbox,
   setsugbox,
-  selectedcustomer,
+ // selectedcustomer,
   setselectedcustomer,
 }: {
   sugbox: boolean;
   setsugbox: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedcustomer: Custprop|null,
+  // selectedcustomer: Custprop|null,
   setselectedcustomer: React.Dispatch<React.SetStateAction<Custprop|null>>; 
 }) => {
  
   const selectedItems = useSelector((state:RootState)=>state.NewReq.selectedItems)
   const [searchclient, setsearchclient] = useState<string>("");
-  const [getcusdata, setgetcusdata] = useState<any>();
-  const [getcusmongodata, setgetcusmongodata] = useState<any>();
+  const [getcusdata, setgetcusdata] = useState<dCustomerArray>([]);
+  const [getcusmongodata, setgetcusmongodata] = useState<dCustomerArray>([]);
   const [userid,setuserid]=useState<string|null>('');
   useEffect(()=>{
     if (typeof window !== 'undefined'){
@@ -153,7 +153,7 @@ const Secondhalf = ({
   Selectcondition,
   setSelectcondition,
   selectedcustomer,
-  setselectedcustomer,
+  // setselectedcustomer,
   Submit_Request,
 }: {
   size: string;
@@ -161,7 +161,7 @@ const Secondhalf = ({
   Selectcondition: string;
   setSelectcondition: React.Dispatch<React.SetStateAction<string>>;
   selectedcustomer: Custprop|null,
-  setselectedcustomer: React.Dispatch<React.SetStateAction<Custprop|null>>; 
+  // setselectedcustomer: React.Dispatch<React.SetStateAction<Custprop|null>>; 
   Submit_Request:(size:string,Selectcondition:string,customer:Custprop|null)=>void;
 }) => {
   const dispatch= useDispatch()
@@ -225,7 +225,7 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
   const [Selectcondition, setSelectcondition] = useState<string>("");
   const [size, setsize] = useState("");
   const [selectedcustomer,setselectedcustomer]=useState<Custprop|null>(null);
-  const [complete, setcomplete] = useState<boolean>(false);
+  //const [complete, setcomplete] = useState<boolean>(false);
   const [sugbox, setsugbox] = useState<boolean>(false);
   const [userid,setuserid]=useState<string|null>('')
   useEffect(()=>{
@@ -235,11 +235,11 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
       
      }
   },[])
-  const transition = {
-    duration: 0.8,
-    delay: 0.5,
-    ease: [0, 0.71, 0.2, 1.01],
-  };
+  // const transition = {
+  //   duration: 0.8,
+  //   delay: 0.5,
+  //   ease: [0, 0.71, 0.2, 1.01],
+  // };
   const Submit=async(size:string,Selectcondition:string,customer:Custprop|null)=>{
     console.log("seleted customer :",customer)
     console.log("size             :",size)
@@ -293,7 +293,7 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
       <Firsthalf
        sugbox={sugbox}
         setsugbox={setsugbox} 
-        selectedcustomer={selectedcustomer}
+        // selectedcustomer={selectedcustomer}
         setselectedcustomer={setselectedcustomer}/>
       <Secondhalf
         size={size}
@@ -301,7 +301,7 @@ export default function Reqsubmit({ sideopen }: { sideopen: boolean }) {
         Selectcondition={Selectcondition}
         setSelectcondition={setSelectcondition}
         selectedcustomer={selectedcustomer}
-        setselectedcustomer={setselectedcustomer}
+        // setselectedcustomer={setselectedcustomer}
         Submit_Request={Submit}
       />
     </div>

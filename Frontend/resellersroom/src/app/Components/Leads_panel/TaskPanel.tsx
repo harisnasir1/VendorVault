@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,10 @@ import {
 import { Button } from "@/components/ui/button";
 import { Plus, Check, X } from "lucide-react";
 import axios from "axios";
-import { Suggest, labeltype,Task } from "../Small comps/Types";
+import { labeltype,Task } from "../Small comps/Types";
+
+
+
 
 export function TaskPanel({
   open,
@@ -32,7 +35,7 @@ export function TaskPanel({
   const [newLabel, setNewLabel] = useState("");
   const [selectedColor, setSelectedColor] = useState("bg-blue-500");
   const [availableLabels, setavailableLabels] = useState<labeltype[]>([]);
-  const dialogRef = useRef<HTMLDivElement>(null);
+ 
 
   const AddnewLabel = async (color: string, label: string) => {
     try {
@@ -57,9 +60,10 @@ export function TaskPanel({
     }
   };
 
-  const toggleLabel = async (label: any) => {
+  const toggleLabel = async (label: labeltype) => {
     if (!task?._id) return;
-
+  
+     console.log(label)
     const isAlreadySelected = selectedLabels.some((l) => l._id === label._id);
     const updatedLabels = isAlreadySelected
       ? selectedLabels.filter((l) => l._id !== label._id)
@@ -68,8 +72,8 @@ export function TaskPanel({
     setSelectedLabels(updatedLabels);
 
     try {
-      const cleanlabel = updatedLabels.map(({ _id }: { _id: labeltype }) => _id);
-      const res = await axios.post("http://localhost:8000/api/orders/updatelabels", {
+      const cleanlabel =  updatedLabels.map(({ _id }) => _id);;
+       await axios.post("http://localhost:8000/api/orders/updatelabels", {
         newlabels: cleanlabel,
         orderid: task._id
       });
@@ -115,7 +119,7 @@ export function TaskPanel({
   };
   const handleDeleteLabel=async(id:string)=>{
     try{
-         const res=await axios.post("http://localhost:8000/api/features/dellabel",{
+       await axios.post("http://localhost:8000/api/features/dellabel",{
           id:id
          })
        setavailableLabels(  availableLabels.filter((label:labeltype)=> id!==label._id))
@@ -167,7 +171,7 @@ export function TaskPanel({
             <div className="mb-6">
               <h3 className="text-sm font-semibold mb-2">Labels</h3>
               <div className="flex gap-2 flex-wrap">
-                {selectedLabels?.map((label, index) => (
+                {selectedLabels?.map((label) => (
                   <div
                     key={label._id}
                     className={`px-3 py-1 text-sm rounded-full text-white flex items-center gap-1 ${label.label.col}`}

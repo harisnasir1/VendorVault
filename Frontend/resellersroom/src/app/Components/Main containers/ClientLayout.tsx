@@ -1,13 +1,13 @@
 "use client";
-import { useState,useEffect,useRef  } from "react";
+import { useState,useEffect  } from "react";
 import Sidebar from "../Main containers/Sidebar";
 import Navbar from "../Main containers/Navbar";
 import { SelectionProvider } from "../../Context/Leads/SelectionContext";
-import { usePathname } from 'next/navigation';
+
 import axios from "axios";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
+  // const pathname = usePathname();
   const [sideOpen, setSideOpen] = useState(true);
 
   useEffect(()=>{
@@ -25,7 +25,7 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
       fetchtempuser();
   },[])
 
-  const handleMainClick = (msg:String) => {
+  const handleMainClick = (msg:string) => {
 
     if (window.innerWidth < 800 && msg!="menubtn" ) {
         

@@ -1,7 +1,7 @@
 import React from 'react'
 
 type Props = {
-    toggleSidebar:(msg:String)=>void;
+    toggleSidebar:(msg:string)=>void;
 }
 
 const Navbar = (props: Props) => {

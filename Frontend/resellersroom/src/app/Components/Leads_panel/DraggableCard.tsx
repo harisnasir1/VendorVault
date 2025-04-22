@@ -3,14 +3,14 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { TaskPanel } from './TaskPanel';
 import { Clock } from 'lucide-react';
-import { Suggest,Task } from "../Small comps/Types";
+import { Task } from "../Small comps/Types";
 
 
 
 
 interface DraggableCardProps {
   task: Task;
-  column: object;
+
   disableDrag?: boolean;
   Manualcolchange: (newStage: string, oldstage: string, taskid: number, task: Task) => void;
   fetchallorders: () => void;
@@ -18,7 +18,7 @@ interface DraggableCardProps {
 
 const columnOptions = ["NewLead", "NeedToSource", "Offered", "WarmLead", "Won", "Lost"];
 
-const DraggableCard: React.FC<DraggableCardProps> = ({ task, column, disableDrag = false, Manualcolchange, fetchallorders }) => {
+const DraggableCard: React.FC<DraggableCardProps> = ({ task, disableDrag = false, Manualcolchange, fetchallorders }) => {
   const {
     attributes,
     listeners,

@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from "react";
 import {Suggest} from "../Small comps/Types"
-import {useSelection} from "../../Context/Leads/SelectionContext"
-import { useSelector, useDispatch } from 'react-redux';
-import { Reseller, RootState } from "@/lib/Resellerstore";
+import {  useDispatch } from 'react-redux';
+// import { Reseller, RootState } from "@/lib/Resellerstore";
 import {addItem,Toggleleadsrenderstep} from '@/lib/features/Newrequest/NewRequestSlice'
 
-const RCard = ({item,Requestmade}:{item:Suggest,Requestmade:()=>void}) => {
+const RCard = ({item}:{item:Suggest}) => {
   const dispatch =useDispatch()
   
 
@@ -39,8 +38,7 @@ const RCard = ({item,Requestmade}:{item:Suggest,Requestmade:()=>void}) => {
 };
 
 
-const Requestresult = ({suggesteddata,setsuggesteddata,Requestmade}: {suggesteddata:Suggest[],setsuggesteddata:React.Dispatch<React.SetStateAction<Suggest[]>>
-, Requestmade:()=>void
+const Requestresult = ({suggesteddata}: {suggesteddata:Suggest[], 
 }) => {
 
   const [resutls,setresult]=useState<Suggest[]>([])
@@ -64,7 +62,7 @@ const Requestresult = ({suggesteddata,setsuggesteddata,Requestmade}: {suggestedd
       {
         resutls.map((item:Suggest,key:number)=>{
          return(
-          <RCard key={key} item={item} Requestmade={Requestmade}  />
+          <RCard key={key} item={item}  />
          )
 
         })
